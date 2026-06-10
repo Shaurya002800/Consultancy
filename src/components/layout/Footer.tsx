@@ -3,7 +3,7 @@ import Link from 'next/link'
 export default function Footer() {
   return (
     <footer className="bg-[#0D0D0D] text-[#E8D5B7]">
-      <div className="container mx-auto px-6 max-w-[1120px] py-16">
+      <div className="container mx-auto px-6 max-w-280 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
 
           {/* Brand */}
@@ -12,7 +12,7 @@ export default function Footer() {
               className="text-[20px] font-medium text-white mb-2"
               style={{ fontFamily: 'Playfair Display, Georgia, serif' }}
             >
-              Shaurya's Mom
+              Serenova
             </p>
             <p className="text-[11px] tracking-[0.15em] text-[#C4956A] uppercase mb-4">
               Guidance & Astrology
