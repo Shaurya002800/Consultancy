@@ -1,19 +1,22 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, DM_Sans, DM_Mono } from 'next/font/google'
+import { Cormorant_Garamond, DM_Sans, DM_Mono } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import Script from 'next/script'
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-playfair',
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500'],
+  style: ['normal', 'italic'],
   display: 'swap',
 })
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-dm-sans',
+  weight: ['400', '600'],
   display: 'swap',
 })
 
@@ -25,18 +28,13 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Guidance & Astrology | A Safe Space",
-  description:
-    'Personal consultancy and astrology sessions. A safe space to be heard, guided, and understood.',
+  title: 'Serenova — Guidance & Astrology',
+  description: 'A safe space to be heard, guided, and understood.',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${dmSans.variable} ${dmMono.variable}`}>
       <body>
         <Navbar />
         <main>{children}</main>

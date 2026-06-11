@@ -1,186 +1,154 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-export default function Home() {
-  const glowRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    let scale = 1
-    let growing = true
-    let frame: number
-
-    const pulse = () => {
-      if (growing) {
-        scale += 0.002
-        if (scale >= 1.15) growing = false
-      } else {
-        scale -= 0.002
-        if (scale <= 1) growing = true
-      }
-      if (glowRef.current) {
-        glowRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`
-      }
-      frame = requestAnimationFrame(pulse)
-    }
-
-    frame = requestAnimationFrame(pulse)
-    return () => cancelAnimationFrame(frame)
-  }, [])
-
+// ── Ink Divider SVGs ────────────────────────────────────
+function InkDivider({ variant = 'A' }: { variant?: 'A' | 'B' | 'C' }) {
+  const paths = {
+    A: 'M0,12 C150,9 300,15 450,12 C600,9 750,15 900,12 C1050,9 1150,14 1200,12',
+    B: 'M0,12 C200,15 350,9 500,13 C650,17 800,8 950,12 C1050,14 1150,10 1200,12',
+    C: 'M0,12 C100,8 250,16 400,11 C550,6 700,16 850,12 C1000,8 1100,15 1200,12',
+  }
   return (
-    <div style={{ backgroundColor: 'var(--parchment)' }}>
+    <svg width="100%" height="24" viewBox="0 0 1200 24"
+      preserveAspectRatio="none" style={{ display: 'block', margin: '64px 0' }}>
+      <path d={paths[variant]} stroke="#C9956A" strokeOpacity="0.35"
+        strokeWidth="0.8" fill="none" />
+    </svg>
+  )
+}
 
-      {/* ── HERO ── */}
+// ── Shared styles ───────────────────────────────────────
+const eyebrow: React.CSSProperties = {
+  fontFamily: 'var(--font-body)',
+  fontSize: '11px',
+  fontWeight: 600,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  color: 'var(--gold)',
+  marginBottom: '16px',
+  display: 'block',
+}
+
+export default function Home() {
+  return (
+    <div>
+
+      {/* ══ 1. HERO ══════════════════════════════════════ */}
       <section style={{
-        position: 'relative',
         minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
+        backgroundColor: 'var(--dusk-indigo)',
+        display: 'flex', alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden',
-        padding: '120px 24px 80px',
+        position: 'relative', overflow: 'hidden',
+        padding: 'var(--sp-20) var(--gutter) var(--sp-16)',
       }}>
         {/* Breathing glow */}
-        <div ref={glowRef} style={{
+        <div className="hero-glow" style={{
           position: 'absolute',
-          top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
+          top: '40%', left: '50%',
           width: '600px', height: '600px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(196,149,106,0.18) 0%, rgba(196,149,106,0.06) 50%, transparent 70%)',
-          pointerEvents: 'none',
-          zIndex: 0,
+          background: 'radial-gradient(circle, rgba(201,149,106,0.18) 0%, rgba(201,149,106,0) 70%)',
+          pointerEvents: 'none', zIndex: 0,
+          transform: 'translate(-50%, -40%)',
         }} />
 
         <div style={{
           position: 'relative', zIndex: 1,
-          maxWidth: '760px',
-          textAlign: 'center',
+          maxWidth: '800px', width: '100%',
         }}>
-          <p style={{
-            fontSize: '11px',
-            letterSpacing: '0.2em',
-            textTransform: 'uppercase',
-            color: '#C4956A',
-            fontWeight: 400,
-            marginBottom: '28px',
-          }}>
-            Personal Guidance · Astrology · Companion Travel
-          </p>
+          <span style={eyebrow}>Serenova · Guidance & Astrology</span>
 
           <h1 style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(42px, 7vw, 80px)',
-            fontWeight: 500,
-            color: '#0D0D0D',
-            lineHeight: 1.1,
-            marginBottom: '28px',
+            fontSize: 'var(--fs-display-xl)',
+            fontWeight: 300,
+            color: 'var(--ghost-white)',
+            lineHeight: 1.05,
             letterSpacing: '-0.02em',
+            marginBottom: '28px',
           }}>
             You don't have to<br />
-            <em style={{ fontStyle: 'italic', color: '#C4956A' }}>figure it out alone.</em>
+            <em style={{
+              fontStyle: 'italic',
+              color: 'var(--gold-pale)',
+              fontWeight: 300,
+            }}>
+              figure it out alone.
+            </em>
           </h1>
 
           <p style={{
-            fontSize: '18px',
-            color: '#4A5F74',
-            lineHeight: 1.8,
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--fs-body-lg)',
+            color: 'var(--dusty)',
+            lineHeight: 1.7,
             marginBottom: '48px',
             maxWidth: '520px',
-            margin: '0 auto 48px',
           }}>
-            A safe space to be heard, understood, and guided — through life's
-            crossroads, cosmic questions, and everything in between.
+            One conversation can change everything.
           </p>
 
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/book" style={{
-              display: 'inline-flex', alignItems: 'center',
-              padding: '14px 36px',
-              borderRadius: '999px',
-              backgroundColor: '#C4956A',
-              color: '#fff',
-              fontSize: '15px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = '#A67B52'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = '#C4956A'}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '72px' }}>
+            <Link href="/book" className="btn btn-primary">
               Book a Session
             </Link>
-            <Link href="/about" style={{
-              display: 'inline-flex', alignItems: 'center',
-              padding: '14px 36px',
-              borderRadius: '999px',
-              border: '1.5px solid #2C3E50',
-              color: '#2C3E50',
-              fontSize: '15px',
-              fontWeight: 500,
-              textDecoration: 'none',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = '#2C3E50'
-              ;(e.currentTarget as HTMLElement).style.color = '#fff'
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
-              ;(e.currentTarget as HTMLElement).style.color = '#2C3E50'
-            }}>
-              Meet Serenova
+            <Link href="/sessions" className="btn btn-ghost">
+              Learn About Sessions
             </Link>
           </div>
 
-          {/* Trust bar */}
+          {/* Credibility bar */}
           <div style={{
-            marginTop: '72px',
-            display: 'flex',
-            gap: '48px',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
+            paddingTop: '32px',
+            borderTop: '1px solid rgba(226,216,200,0.15)',
+            display: 'flex', gap: '48px', flexWrap: 'wrap',
           }}>
             {[
-              { num: '200+', label: 'Lives Touched' },
-              { num: '8 yrs', label: 'Experience' },
-              { num: '98%', label: 'Feel Heard' },
+              { num: '200+', label: 'Sessions completed' },
+              { num: '8+ yrs', label: 'In practice' },
+              { num: '100%', label: 'Strictly private' },
             ].map(({ num, label }) => (
-              <div key={label} style={{ textAlign: 'center' }}>
+              <div key={label}>
                 <p style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '28px',
-                  fontWeight: 500,
-                  color: '#0D0D0D',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '18px',
+                  color: 'var(--gold)',
                   lineHeight: 1,
+                  marginBottom: '4px',
                 }}>{num}</p>
-                <p style={{ fontSize: '12px', color: '#8A7968', marginTop: '6px', letterSpacing: '0.05em' }}>{label}</p>
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '12px',
+                  color: 'var(--bone)',
+                  letterSpacing: '0.03em',
+                }}>{label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── PAIN POINTS ── */}
+      {/* ══ 2. PAIN POINTS ═══════════════════════════════ */}
       <section style={{
-        padding: '96px 24px',
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--parchment)',
+        padding: 'var(--sp-12) var(--gutter)',
       }}>
-        <div style={{ maxWidth: '1120px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C4956A', marginBottom: '16px' }}>
-              You are not alone
-            </p>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 500,
-              color: '#0D0D0D',
-            }}>
-              Does any of this feel familiar?
-            </h2>
-          </div>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <span style={eyebrow}>Sound familiar?</span>
+          <h2 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'var(--fs-display-md)',
+            fontWeight: 400,
+            color: 'var(--ink)',
+            marginBottom: '0',
+            maxWidth: '640px',
+          }}>
+            You don't have to carry this alone.
+          </h2>
+
+          <InkDivider variant="A" />
 
           <div style={{
             display: 'grid',
@@ -188,259 +156,321 @@ export default function Home() {
             gap: '24px',
           }}>
             {[
-              { icon: '🌀', text: 'Feeling stuck in the same patterns, unable to move forward' },
-              { icon: '💬', text: 'Needing someone to talk to — really talk to, without judgment' },
-              { icon: '✨', text: 'Seeking clarity about your path using cosmic perspective' },
-              { icon: '🧳', text: 'Wanting a trusted companion for your child\'s journey' },
-            ].map(({ icon, text }) => (
-              <div key={text} style={{
-                backgroundColor: '#F7F2EA',
-                borderRadius: '16px',
+              { icon: '◌', text: 'I can\'t stop worrying — the same thoughts loop and I can\'t find the off switch.' },
+              { icon: '◌', text: 'There\'s a big decision ahead and I don\'t know who to talk to about it honestly.' },
+              { icon: '◌', text: 'I feel lost in a life transition and need someone to help me find direction.' },
+              { icon: '◌', text: 'I don\'t know who to trust with something this personal.' },
+            ].map(({ icon, text }, i) => (
+              <div key={i} style={{
+                backgroundColor: 'var(--warm-sand)',
+                borderLeft: '3px solid var(--gold)',
+                borderRadius: 'var(--radius)',
                 padding: '32px 28px',
-                border: '1px solid #E8D5B7',
-                transition: 'transform 0.2s, box-shadow 0.2s',
+                transition: 'transform var(--dur-medium) var(--ease-warm), box-shadow var(--dur-medium) var(--ease-warm)',
               }}
-              onMouseEnter={(e: { currentTarget: HTMLElement }) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 12px 32px rgba(196,149,106,0.12)'
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'
+                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(201,149,106,0.12)'
               }}
-              onMouseLeave={(e: { currentTarget: HTMLElement }) => {
+              onMouseLeave={e => {
                 (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
                 ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
               }}>
-                <div style={{ fontSize: '28px', marginBottom: '16px' }}>{icon}</div>
-                <p style={{ fontSize: '15px', color: '#2C3E50', lineHeight: 1.7 }}>{text}</p>
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'var(--fs-body-md)',
+                  color: 'var(--violet-grey)',
+                  lineHeight: 1.7,
+                }}>{text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SERVICES ── */}
-      <section style={{ padding: '96px 24px', backgroundColor: 'var(--parchment)' }}>
-        <div style={{ maxWidth: '1120px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C4956A', marginBottom: '16px' }}>
-              What we offer
-            </p>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 500,
-              color: '#0D0D0D',
-            }}>
-              Three ways to find your way
-            </h2>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '28px' }}>
-            {[
-              {
-                tag: 'Most Popular',
-                title: 'Personal Consultancy',
-                desc: 'A one-on-one conversation built entirely around you. Share what\'s weighing on you, explore your options, and leave with clarity and direction.',
-                price: 'From ₹800',
-                href: '/sessions',
-                accent: false,
-              },
-              {
-                tag: 'Signature',
-                title: 'Astrology + Guidance',
-                desc: 'Your birth chart meets lived experience. Understand the cosmic forces shaping your present, then work through them with personalized guidance.',
-                price: 'From ₹1,200',
-                href: '/sessions',
-                accent: true,
-              },
-              {
-                tag: 'Unique Service',
-                title: 'Companion Travel',
-                desc: 'A caring, experienced companion for your child\'s trips — so they explore freely and you have peace of mind.',
-                price: 'Custom pricing',
-                href: '/travel',
-                accent: false,
-              },
-            ].map(({ tag, title, desc, price, href, accent }) => (
-              <div key={title} style={{
-                backgroundColor: accent ? '#0D0D0D' : '#fff',
-                borderRadius: '20px',
-                padding: '40px 36px',
-                border: accent ? 'none' : '1px solid #E8D5B7',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                transition: 'transform 0.2s',
-              }}
-              onMouseEnter={(e: { currentTarget: HTMLElement }) => (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'}
-              onMouseLeave={(e: { currentTarget: HTMLElement }) => (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'}>
-                <span style={{
-                  display: 'inline-block',
-                  fontSize: '10px',
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: '#C4956A',
-                  backgroundColor: accent ? 'rgba(196,149,106,0.15)' : '#FDF6EE',
-                  padding: '4px 12px',
-                  borderRadius: '999px',
-                  width: 'fit-content',
-                }}>
-                  {tag}
-                </span>
-                <h3 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '22px',
-                  fontWeight: 500,
-                  color: accent ? '#F7F2EA' : '#0D0D0D',
-                }}>
-                  {title}
-                </h3>
-                <p style={{ fontSize: '14px', color: accent ? '#8A7968' : '#4A5F74', lineHeight: 1.8, flex: 1 }}>
-                  {desc}
-                </p>
-                <div style={{
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingTop: '16px',
-                  borderTop: `1px solid ${accent ? '#1E1E1E' : '#E8D5B7'}`,
-                }}>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '13px',
-                    color: '#C4956A',
-                    fontWeight: 500,
-                  }}>
-                    {price}
-                  </span>
-                  <Link href={href} style={{
-                    fontSize: '13px',
-                    color: accent ? '#C4956A' : '#2C3E50',
-                    textDecoration: 'none',
-                    fontWeight: 500,
-                  }}>
-                    Learn more →
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── HOW IT WORKS ── */}
-      <section style={{ padding: '96px 24px', backgroundColor: '#fff' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center' }}>
-          <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C4956A', marginBottom: '16px' }}>
-            Simple process
-          </p>
+      {/* ══ 3. SERVICES ══════════════════════════════════ */}
+      <section style={{
+        backgroundColor: 'var(--warm-white)',
+        padding: 'var(--sp-12) var(--gutter)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <span style={eyebrow}>What Serenova Offers</span>
           <h2 style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(28px, 4vw, 42px)',
-            fontWeight: 500,
-            color: '#0D0D0D',
-            marginBottom: '64px',
+            fontSize: 'var(--fs-display-md)',
+            fontWeight: 400,
+            color: 'var(--ink)',
+            marginBottom: '0',
           }}>
-            From first visit to feeling better
+            Three ways to find your way forward.
           </h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+          <InkDivider variant="B" />
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '24px',
+            marginBottom: '48px',
+          }}>
             {[
-              { step: '01', title: 'Choose your session', desc: 'Pick the type of support that speaks to where you are right now — consultancy, astrology, or travel companionship.' },
-              { step: '02', title: 'Pick a time that works', desc: 'Browse available slots and book directly. You\'ll get a confirmation and a gentle reminder before your session.' },
-              { step: '03', title: 'Show up as you are', desc: 'No preparation needed. Just come as you are. Your session is a judgment-free space built entirely for you.' },
-            ].map(({ step, title, desc }, i) => (
-              <div key={step} style={{
-                display: 'flex',
-                gap: '32px',
-                textAlign: 'left',
-                paddingBottom: i < 2 ? '48px' : '0',
-                marginBottom: i < 2 ? '48px' : '0',
-                borderBottom: i < 2 ? '1px solid #E8D5B7' : 'none',
+              {
+                icon: '◈',
+                title: 'Personal Consultancy',
+                desc: 'A one-on-one space to be heard without judgment. For relationships, career, grief, or anything weighing on your mind.',
+                price: '800',
+                href: '/sessions',
+              },
+              {
+                icon: '◈',
+                title: 'Astrology + Guidance',
+                desc: 'Your birth chart decoded and then worked through together. Cosmic perspective meets lived wisdom.',
+                price: '1,800',
+                href: '/sessions',
+              },
+              {
+                icon: '◈',
+                title: 'Companion Travel',
+                desc: 'A trusted adult companion for your child\'s journey. You stay home. They explore freely. You have peace of mind.',
+                price: null,
+                href: '/travel',
+              },
+            ].map(({ icon, title, desc, price, href }) => (
+              <div key={title} style={{
+                backgroundColor: 'var(--parchment)',
+                border: '1px solid var(--bone)',
+                borderRadius: 'var(--radius)',
+                padding: '32px',
+                display: 'flex', flexDirection: 'column', gap: '16px',
+                transition: 'all var(--dur-medium) var(--ease-warm)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--warm-sand)'
+                ;(e.currentTarget as HTMLElement).style.borderColor = 'var(--gold)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'
+                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(201,149,106,0.12)'
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--parchment)'
+                ;(e.currentTarget as HTMLElement).style.borderColor = 'var(--bone)'
+                ;(e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
+                ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
               }}>
-                <span style={{
+                <span style={{ fontSize: '32px', color: 'var(--gold)' }}>{icon}</span>
+                <h3 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: '36px',
+                  fontSize: 'var(--fs-display-sm)',
                   fontWeight: 400,
-                  color: '#E8D5B7',
-                  lineHeight: 1,
-                  flexShrink: 0,
-                  width: '56px',
+                  color: 'var(--ink)',
+                  lineHeight: 1.2,
+                }}>{title}</h3>
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'var(--fs-body-md)',
+                  color: 'var(--violet-grey)',
+                  lineHeight: 1.7,
+                  flex: 1,
+                }}>{desc}</p>
+                <div style={{
+                  paddingTop: '16px',
+                  borderTop: '1px solid var(--bone)',
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
-                  {step}
-                </span>
-                <div>
-                  <h3 style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '20px',
-                    fontWeight: 500,
-                    color: '#0D0D0D',
-                    marginBottom: '8px',
+                  <span style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '12px',
+                    color: 'var(--dusty)',
+                  }}>Starting from</span>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '18px',
+                    color: 'var(--gold)',
                   }}>
-                    {title}
-                  </h3>
-                  <p style={{ fontSize: '15px', color: '#4A5F74', lineHeight: 1.8 }}>{desc}</p>
+                    {price ? `Rs. ${price}` : 'Enquire'}
+                  </span>
                 </div>
+                <Link href={href} style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: 'var(--gold)',
+                  textDecoration: 'none',
+                  letterSpacing: '0.05em',
+                }}>
+                  Learn more →
+                </Link>
               </div>
             ))}
+          </div>
+
+          {/* WhatsApp CTA */}
+          <div style={{ textAlign: 'center' }}>
+            <p style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'var(--fs-body-md)',
+              color: 'var(--violet-grey)',
+              marginBottom: '16px',
+            }}>
+              Unsure which is right for you?
+            </p>
+            
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
+              target="_blank" rel="noopener noreferrer"
+              className="btn btn-whatsapp">
+              Chat on WhatsApp
+            </a>
           </div>
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section style={{ padding: '96px 24px', backgroundColor: 'var(--parchment)' }}>
-        <div style={{ maxWidth: '1120px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C4956A', marginBottom: '16px' }}>
-              Real stories
-            </p>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(28px, 4vw, 42px)',
-              fontWeight: 500,
-              color: '#0D0D0D',
-            }}>
-              What people say
-            </h2>
+      {/* ══ 4. HOW IT WORKS ══════════════════════════════ */}
+      <section style={{
+        backgroundColor: 'var(--parchment)',
+        padding: 'var(--sp-10) var(--gutter)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <span style={eyebrow}>Your first step is easy</span>
+          <h2 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'var(--fs-display-md)',
+            fontWeight: 400,
+            color: 'var(--ink)',
+            marginBottom: '64px',
+          }}>
+            Three steps, then you're heard.
+          </h2>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: '0',
+            position: 'relative',
+          }}>
+            {[
+              { num: '01', title: 'Choose your session', desc: 'Pick the type of support that speaks to where you are right now.' },
+              { num: '02', title: 'Pick a time that works', desc: 'Browse available slots and book directly. Confirmation arrives immediately.' },
+              { num: '03', title: 'Show up as you are', desc: 'No preparation needed. Just come as you are. She meets you there.' },
+            ].map(({ num, title, desc }, i) => (
+              <div key={num} style={{
+                padding: '0 40px 0 0',
+                borderRight: i < 2 ? '1px solid var(--bone)' : 'none',
+                paddingRight: i < 2 ? '40px' : '0',
+                paddingLeft: i > 0 ? '40px' : '0',
+              }}>
+                {/* Ghost number */}
+                <div style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '72px',
+                  fontWeight: 300,
+                  color: 'var(--bone)',
+                  lineHeight: 1,
+                  marginBottom: '-16px',
+                  letterSpacing: '-0.03em',
+                }}>
+                  {num}
+                </div>
+                <h3 style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 'var(--fs-heading-lg)',
+                  fontWeight: 500,
+                  color: 'var(--ink)',
+                  marginBottom: '12px',
+                  position: 'relative',
+                  zIndex: 1,
+                }}>{title}</h3>
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'var(--fs-body-md)',
+                  color: 'var(--violet-grey)',
+                  lineHeight: 1.7,
+                }}>{desc}</p>
+              </div>
+            ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          <div style={{ marginTop: '56px' }}>
+            <Link href="/book" className="btn btn-primary">
+              Book Your First Session
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 5. TESTIMONIALS ══════════════════════════════ */}
+      <section style={{
+        backgroundColor: 'var(--dusk-indigo)',
+        padding: 'var(--sp-12) var(--gutter)',
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <span style={eyebrow}>What clients say</span>
+          <h2 style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'var(--fs-display-md)',
+            fontWeight: 400,
+            color: 'var(--gold-pale)',
+            marginBottom: '64px',
+          }}>
+            Real people. Real change.
+          </h2>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '24px',
+          }}>
             {[
-              { quote: 'I came in feeling completely lost. After one session, I had a direction. She doesn\'t just listen — she helps you see what you already know.', name: 'Priya M.', location: 'Delhi' },
-              { quote: 'The astrology session was unlike anything I expected. It felt like someone had read my entire life and handed me a map forward.', name: 'Arjun S.', location: 'Mumbai' },
-              { quote: 'My son traveled with her companion service for the first time. She kept him safe, engaged, and came back with stories I\'ll never forget.', name: 'Meera R.', location: 'Bangalore' },
-            ].map(({ quote, name, location }) => (
+              { quote: 'I came in feeling completely lost. After one session, I had a direction. She doesn\'t just listen — she helps you see what you already know.', name: 'R.M.', city: 'Delhi' },
+              { quote: 'The astrology session was unlike anything I expected. It felt like someone had read my entire life and handed me a map forward.', name: 'A.S.', city: 'Mumbai' },
+              { quote: 'My son traveled with her companion service. She kept him safe, engaged — he came back with stories I\'ll never forget.', name: 'M.R.', city: 'Bangalore' },
+            ].map(({ quote, name, city }) => (
               <div key={name} style={{
-                backgroundColor: '#fff',
-                borderRadius: '16px',
-                padding: '36px 32px',
-                border: '1px solid #E8D5B7',
+                backgroundColor: 'var(--twilight)',
+                borderLeft: '3px solid var(--gold)',
+                borderRadius: 'var(--radius)',
+                padding: '32px',
               }}>
-                <p style={{
-                  fontSize: '15px',
-                  color: '#2C3E50',
-                  lineHeight: 1.8,
-                  marginBottom: '28px',
-                  fontStyle: 'italic',
+                {/* Opening quote mark */}
+                <div style={{
                   fontFamily: 'var(--font-display)',
-                }}>
-                  "{quote}"
-                </p>
+                  fontSize: '48px',
+                  color: 'var(--gold)',
+                  lineHeight: 0.8,
+                  marginBottom: '16px',
+                  opacity: 0.6,
+                }}>"</div>
+                <p style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '20px',
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  color: 'var(--ghost-white)',
+                  lineHeight: 1.7,
+                  marginBottom: '28px',
+                }}>{quote}</p>
+                <div style={{
+                  width: '40px', height: '2px',
+                  backgroundColor: 'var(--gold)',
+                  marginBottom: '16px',
+                  opacity: 0.5,
+                }} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
-                    width: '40px', height: '40px',
-                    borderRadius: '50%',
-                    backgroundColor: '#F7F2EA',
-                    border: '1px solid #E8D5B7',
+                    width: '32px', height: '32px', borderRadius: '50%',
+                    backgroundColor: 'var(--gold)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    color: '#C4956A',
                     fontFamily: 'var(--font-display)',
+                    fontSize: '14px', fontWeight: 500,
+                    color: 'var(--warm-white)',
+                    flexShrink: 0,
                   }}>
                     {name[0]}
                   </div>
-                  <div>
-                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#0D0D0D' }}>{name}</p>
-                    <p style={{ fontSize: '12px', color: '#8A7968' }}>{location}</p>
-                  </div>
+                  <p style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '14px',
+                    color: 'var(--dusty)',
+                  }}>{name}, {city}</p>
                 </div>
               </div>
             ))}
@@ -448,44 +478,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CTA BANNER ── */}
+      {/* ══ 6. CTA BANNER ════════════════════════════════ */}
       <section style={{
-        padding: '96px 24px',
-        backgroundColor: '#0D0D0D',
+        backgroundColor: 'var(--gold-pale)',
+        padding: 'var(--sp-10) var(--gutter)',
         textAlign: 'center',
       }}>
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <p style={{ fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C4956A', marginBottom: '24px' }}>
-            Ready when you are
-          </p>
+        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
           <h2 style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(30px, 5vw, 52px)',
-            fontWeight: 500,
-            color: '#F7F2EA',
+            fontSize: 'var(--fs-display-md)',
+            fontWeight: 400,
+            color: 'var(--ink)',
             lineHeight: 1.2,
             marginBottom: '24px',
           }}>
-            Your next chapter<br />
-            <em style={{ color: '#C4956A' }}>starts with one conversation.</em>
+            Your next chapter starts with<br />one conversation.
           </h2>
-          <p style={{ fontSize: '16px', color: '#8A7968', lineHeight: 1.8, marginBottom: '40px' }}>
-            Sessions are available online and in-person. Slots fill up quickly — book yours today.
+          <p style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'var(--fs-body-md)',
+            color: 'var(--slate)',
+            lineHeight: 1.7,
+            marginBottom: '40px',
+          }}>
+            No judgment. No scripts. Just you and someone who genuinely listens.
           </p>
-          <Link href="/book" style={{
-            display: 'inline-flex', alignItems: 'center',
-            padding: '16px 40px',
-            borderRadius: '999px',
-            backgroundColor: '#C4956A',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: 500,
-            textDecoration: 'none',
-          }}
-          onMouseEnter={e => (e.currentTarget as HTMLElement).style.backgroundColor = '#A67B52'}
-          onMouseLeave={e => (e.currentTarget as HTMLElement).style.backgroundColor = '#C4956A'}>
-            Book a Session
-          </Link>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/book" className="btn btn-primary">Book a Session</Link>
+            
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
+              target="_blank" rel="noopener noreferrer"
+              className="btn btn-whatsapp">
+              Ask on WhatsApp
+            </a>
+          </div>
         </div>
       </section>
 

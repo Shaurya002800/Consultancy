@@ -2,25 +2,88 @@
 
 @layer base {
   :root {
-    --parchment: #F7F2EA;
-    --sand: #E8D5B7;
-    --gold: #C4956A;
-    --gold-light: #D4A97A;
-    --gold-dark: #A67B52;
-    --slate: #2C3E50;
-    --slate-light: #4A5F74;
-    --void: #0D0D0D;
-    --white: #FFFFFF;
-    --muted: #8A7968;
+    /* ── Backgrounds ── */
+    --warm-white: #FDFAF6;
+    --parchment: #F7F0E6;
+    --warm-sand: #F0E8D8;
+    --pale-gold-bg: #FDF3E3;
+    --bone: #E2D8C8;
 
-    --font-display: var(--font-playfair), Georgia, serif;
+    /* ── Dark / Indigo ── */
+    --void: #0A0A14;
+    --dusk-indigo: #1C1A2E;
+    --twilight: #2D2B45;
+    --veil: #3D3A5C;
+
+    /* ── Brand ── */
+    --gold: #C9956A;
+    --gold-light: #E8B98A;
+    --gold-pale: #F5E2CA;
+    --gold-deep: #A07850;
+
+    /* ── Text ── */
+    --ink: #1E1B2E;
+    --slate: #2C3E50;
+    --violet-grey: #5C5470;
+    --dusty: #9E9080;
+    --ghost-white: #FDFAF6;
+    --pale-gold-text: #F5E2CA;
+
+    /* ── Semantic ── */
+    --confirm: #4CAF85;
+    --error: #E85D5D;
+    --warning: #F0A830;
+    --info: #5B90C4;
+
+    /* ── Fonts ── */
+    --font-display: var(--font-cormorant), Georgia, serif;
     --font-body: var(--font-dm-sans), system-ui, sans-serif;
     --font-mono: var(--font-dm-mono), monospace;
 
-    --max-width: 1120px;
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-lg: 20px;
+    /* ── Type Scale ── */
+    --fs-display-xl: clamp(48px, 7vw, 80px);
+    --fs-display-lg: clamp(40px, 5.5vw, 64px);
+    --fs-display-md: clamp(32px, 4vw, 48px);
+    --fs-display-sm: clamp(26px, 3vw, 36px);
+    --fs-heading-xl: 28px;
+    --fs-heading-lg: 22px;
+    --fs-heading-md: 18px;
+    --fs-body-lg: 17px;
+    --fs-body-md: 15px;
+    --fs-body-sm: 13px;
+    --fs-label: 11px;
+    --fs-mono: 14px;
+
+    /* ── Spacing ── */
+    --sp-1: 8px;
+    --sp-2: 16px;
+    --sp-3: 24px;
+    --sp-4: 32px;
+    --sp-5: 40px;
+    --sp-6: 48px;
+    --sp-8: 64px;
+    --sp-10: 80px;
+    --sp-12: 96px;
+    --sp-16: 128px;
+    --sp-20: 160px;
+
+    /* ── Layout ── */
+    --max-width: 1200px;
+    --gutter: 48px;
+
+    /* ── Radius ── */
+    --radius: 2px;
+
+    /* ── Easing ── */
+    --ease-warm: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    --ease-out-soft: cubic-bezier(0, 0, 0.2, 1);
+    --ease-gentle: cubic-bezier(0.34, 1.04, 0.64, 1);
+
+    /* ── Duration ── */
+    --dur-fast: 150ms;
+    --dur-medium: 250ms;
+    --dur-slow: 400ms;
+    --dur-deliberate: 600ms;
   }
 
   *, *::before, *::after {
@@ -29,78 +92,129 @@
     padding: 0;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   body {
-    background-color: var(--parchment);
-    color: var(--slate);
+    background-color: var(--warm-white);
+    color: var(--ink);
     font-family: var(--font-body);
-    font-size: 16px;
+    font-size: var(--fs-body-md);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    line-height: 1.25;
-    color: var(--void);
+    line-height: 1.2;
+    color: var(--ink);
   }
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  img {
-    max-width: 100%;
-    display: block;
-  }
-
-  button {
-    font-family: var(--font-body);
-    cursor: pointer;
-    border: none;
-    background: none;
-  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  button { font-family: var(--font-body); cursor: pointer; border: none; background: none; }
 }
 
 @layer components {
   .container {
-    max-width: 1120px;
+    max-width: var(--max-width);
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 var(--gutter);
   }
 
-  .section {
-    padding: 96px 24px;
+  .section { padding: var(--sp-12) var(--gutter); }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: var(--sp-2);
   }
 
-  .divider {
-    width: 48px;
-    height: 2px;
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: var(--fs-body-md);
+    font-weight: 600;
+    line-height: 1;
+    border-radius: var(--radius);
+    padding: 14px 28px;
+    transition: all var(--dur-fast) var(--ease-warm);
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn-primary {
     background: var(--gold);
-    margin: 16px 0 24px;
+    color: var(--warm-white);
   }
+  .btn-primary:hover {
+    background: var(--gold-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,149,106,0.3);
+  }
+  .btn-primary:active { background: #8A6840; transform: translateY(0); box-shadow: none; }
 
-  .divider--center {
-    margin: 16px auto 24px;
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold);
+    border: 1.5px solid var(--gold);
+    padding: 13px 28px;
+  }
+  .btn-secondary:hover { background: rgba(201,149,106,0.08); border-color: var(--gold-deep); }
+
+  .btn-ghost {
+    background: rgba(253,250,246,0.08);
+    color: var(--pale-gold-text);
+    border: 1px solid rgba(245,226,202,0.4);
+  }
+  .btn-ghost:hover { background: rgba(253,250,246,0.14); }
+
+  .btn-whatsapp {
+    background: #25D366;
+    color: #fff;
+    border-radius: var(--radius);
+  }
+  .btn-whatsapp:hover { background: #1EAE55; transform: translateY(-1px); }
+
+  /* Ink divider */
+  .ink-divider {
+    width: 100%;
+    height: 24px;
+    margin: var(--sp-8) 0;
   }
 }
-.desktop-nav {
-  display: flex;
-}
 
-.mobile-nav {
-  display: none;
-}
+/* Mobile */
+.desktop-nav { display: flex; }
+.mobile-nav { display: none; }
 
 @media (max-width: 768px) {
-  .desktop-nav {
-    display: none;
+  :root { --gutter: 16px; }
+  .desktop-nav { display: none; }
+  .mobile-nav { display: flex; }
+  .section { padding: var(--sp-10) var(--gutter); }
+}
+
+/* Breathing glow animation */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes breathe {
+    0%   { transform: translate(-50%, -40%) scale(1.0);   opacity: 0.7; }
+    50%  { transform: translate(-50%, -40%) scale(1.33);  opacity: 1.0; }
+    100% { transform: translate(-50%, -40%) scale(1.0);   opacity: 0.7; }
   }
-  .mobile-nav {
-    display: flex;
+  .hero-glow {
+    animation: breathe 4000ms cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow { animation: none; opacity: 0.7; }
 }
