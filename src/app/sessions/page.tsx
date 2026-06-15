@@ -1,349 +1,198 @@
 'use client'
 
-import { useState } from 'react'
+import { ArrowRight, Check, HelpCircle, MessageCircle, MoonStar, Sparkles, Timer } from 'lucide-react'
 import Link from 'next/link'
-
-function InkDivider() {
-  return (
-    <svg width="100%" height="24" viewBox="0 0 1200 24" preserveAspectRatio="none"
-      style={{ display: 'block', margin: '64px 0' }}>
-      <path d="M0,12 C150,9 300,15 450,12 C600,9 750,15 900,12 C1050,9 1150,14 1200,12"
-        stroke="#C9956A" strokeOpacity="0.35" strokeWidth="0.8" fill="none" />
-    </svg>
-  )
-}
-
-const eyebrow: React.CSSProperties = {
-  fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 600,
-  letterSpacing: '0.15em', textTransform: 'uppercase',
-  color: 'var(--gold)', marginBottom: '16px', display: 'block',
-}
+import { useState } from 'react'
+import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
 
 const consultancyPlans = [
-  { duration: '30 min', label: 'Quick Clarity', price: 800, features: ['One focused topic', 'Actionable guidance', 'WhatsApp follow-up summary'], popular: false },
-  { duration: '60 min', label: 'Deep Dive', price: 1400, features: ['Full situation exploration', 'Root cause discussion', 'Practical next steps', 'WhatsApp follow-up summary'], popular: true },
-  { duration: '90 min', label: 'Full Session', price: 1900, features: ['Complex or multi-topic situations', 'Comprehensive action plan', 'WhatsApp follow-up summary', 'Priority access for 48hrs'], popular: false },
+  { duration: 30, label: 'Quick Clarity', price: 800, features: ['One focused topic', 'Actionable guidance', 'WhatsApp follow-up summary'], popular: false },
+  { duration: 60, label: 'Deep Dive', price: 1400, features: ['Full situation exploration', 'Root cause discussion', 'Practical next steps', 'WhatsApp follow-up summary'], popular: true },
+  { duration: 90, label: 'Full Session', price: 1900, features: ['Complex or multi-topic situations', 'Comprehensive action plan', 'WhatsApp follow-up summary', 'Priority access for 48 hours'], popular: false },
 ]
 
 const astrologyPlans = [
-  { duration: '60 min', label: 'Birth Chart Reading', price: 1800, features: ['Full natal chart analysis', 'Current planetary transits', 'Guidance on present situation', 'Written chart summary'], popular: false },
-  { duration: '90 min', label: 'Chart + Life Guidance', price: 2400, features: ['Complete birth chart + transits', 'Personalized life guidance', 'Remedies & suggestions', 'Detailed written summary', 'Priority access for 48hrs'], popular: true },
+  { duration: 60, label: 'Birth Chart Reading', price: 1800, features: ['Full natal chart analysis', 'Current planetary transits', 'Guidance on present situation', 'Written chart summary'], popular: false },
+  { duration: 90, label: 'Chart + Life Guidance', price: 2400, features: ['Complete birth chart + transits', 'Personalized life guidance', 'Remedies and suggestions', 'Detailed written summary', 'Priority access for 48 hours'], popular: true },
 ]
 
 const packages = [
-  { name: '3-Session Pack', type: 'Consultancy', price: 3600, original: 4200, saving: 600, desc: 'Three 60-min consultancy sessions. Best for ongoing support through a difficult period. Valid 60 days.' },
-  { name: '5-Session Pack', type: 'Consultancy', price: 5500, original: 7000, saving: 1500, desc: 'Five sessions at a significant discount. Ideal for sustained guidance over 1–2 months. Valid 60 days.' },
-  { name: 'Astro + Consult Bundle', type: 'Mixed', price: 4200, original: 5000, saving: 800, desc: 'One full astrology session + two 60-min consultancy sessions. The most complete bundle. Valid 60 days.' },
+  { name: '3-Session Pack', type: 'Consultancy', price: 3600, original: 4200, desc: 'Three 60-minute sessions for ongoing support through a difficult period.' },
+  { name: '5-Session Pack', type: 'Consultancy', price: 5500, original: 7000, desc: 'Five sessions for sustained guidance over one to two months.' },
+  { name: 'Astro + Consult Bundle', type: 'Mixed', price: 4200, original: 5000, desc: 'One astrology session plus two 60-minute consultancy sessions.' },
 ]
 
 const faqs = [
-  { q: 'Is everything I share confidential?', a: 'Yes, completely. What you share in a session stays between you and your practitioner. Nothing is recorded, shared, or stored externally — ever.' },
-  { q: 'Can I reschedule or cancel?', a: 'You can reschedule up to 24 hours before your session at no charge. Cancellations within 24 hours are non-refundable but can be converted to credit for a future session.' },
-  { q: 'What do I need for an astrology session?', a: 'Just your date, time, and place of birth. An approximate birth time works fine — she\'ll let you know if it affects the reading.' },
-  { q: 'Are sessions available in Hindi?', a: 'Yes, sessions are available in both Hindi and English. You can switch between languages mid-session too.' },
-  { q: 'How do I pay?', a: 'Payment is collected at the time of booking via Razorpay — UPI, cards, net banking, and wallets all accepted.' },
+  ['Is everything confidential?', 'Yes. What you share in a session stays private. Nothing is recorded, shared, or posted.'],
+  ['Can I reschedule?', 'Yes, up to 24 hours before the session at no charge. Last-minute cancellations can be converted into credit.'],
+  ['What do I need for astrology?', 'Date, time, and place of birth are ideal. An approximate birth time can still be useful.'],
+  ['Can sessions happen in Hindi?', 'Yes. Sessions are available in Hindi and English, and you can switch languages naturally.'],
+  ['How does payment work?', 'Payment is collected at booking through Razorpay with UPI, cards, net banking, and wallets.'],
 ]
 
 export default function SessionsPage() {
   const [activeTab, setActiveTab] = useState<'consultancy' | 'astrology'>('consultancy')
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-
+  const [openFaq, setOpenFaq] = useState<number | null>(0)
   const plans = activeTab === 'consultancy' ? consultancyPlans : astrologyPlans
 
   return (
-    <div>
+    <div className="page-shell">
+      <section className="hero" style={{ minHeight: '74vh' }}>
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <span className="eyebrow">Sessions & Pricing</span>
+            <h1>
+              Choose the depth of support that matches <em>today.</em>
+            </h1>
+            <p>
+              Transparent session options for personal guidance and astrology-backed clarity. Start small, go deeper, or build a pack for ongoing support.
+            </p>
+          </div>
 
-      {/* ── HERO ── */}
-      <section style={{
-        backgroundColor: 'var(--dusk-indigo)',
-        padding: '120px 48px 80px', textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-          <span style={{ ...eyebrow, color: 'var(--gold)' }}>Book a Session</span>
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-lg)',
-            fontWeight: 300, color: 'var(--gold-pale)',
-            lineHeight: 1.1, marginBottom: '20px',
-          }}>
-            Transparent pricing.<br />
-            <em>No pressure.</em>
-          </h1>
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'var(--fs-body-lg)',
-            color: 'var(--bone)', lineHeight: 1.7,
-          }}>
-            All sessions are one-on-one and completely private. Online or in-person.
-          </p>
+          <div className="visual-board">
+            <div className="board-content">
+              <div style={{ marginBottom: 16 }}>
+                <SerenovaBrandPanel />
+              </div>
+              <div className="signal-card">
+                <p style={{ color: 'var(--gold-light)', marginBottom: 16 }}>Session fit check</p>
+                {[
+                  ['Need to talk it through', 'Consultancy'],
+                  ['Need timing and patterns', 'Astrology'],
+                  ['Need support over weeks', 'Packages'],
+                ].map(([need, fit]) => (
+                  <div className="signal-row" key={need}>
+                    <HelpCircle size={18} />
+                    <span>{need}</span>
+                    <strong>{fit}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── TAB SWITCHER ── */}
-      <div style={{
-        backgroundColor: 'var(--warm-white)',
-        borderBottom: '1px solid var(--bone)',
-        position: 'sticky', top: '64px', zIndex: 40,
-      }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          padding: '0 48px',
-          display: 'flex', gap: '0',
-        }}>
-          {(['consultancy', 'astrology'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 'var(--fs-body-md)',
-              fontWeight: activeTab === tab ? 600 : 400,
-              color: activeTab === tab ? 'var(--ink)' : 'var(--dusty)',
-              padding: '20px 0',
-              marginRight: '40px',
-              background: 'none', border: 'none', cursor: 'pointer',
-              borderBottom: activeTab === tab ? '2px solid var(--gold)' : '2px solid transparent',
-              transition: 'all var(--dur-fast) var(--ease-warm)',
-            }}>
-              {tab === 'consultancy' ? 'Personal Consultancy' : 'Astrology + Guidance'}
-            </button>
-          ))}
-        </div>
-      </div>
+      <section className="section">
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24, alignItems: 'end', flexWrap: 'wrap', marginBottom: 36 }}>
+            <div className="section-heading" style={{ marginBottom: 0 }}>
+              <span className="eyebrow">Bookable sessions</span>
+              <h2>Two service lines, multiple levels of depth.</h2>
+            </div>
+            <div className="tabs" role="tablist" aria-label="Session type">
+              <button className={`tab ${activeTab === 'consultancy' ? 'active' : ''}`} onClick={() => setActiveTab('consultancy')}>
+                Personal Consultancy
+              </button>
+              <button className={`tab ${activeTab === 'astrology' ? 'active' : ''}`} onClick={() => setActiveTab('astrology')}>
+                Astrology + Guidance
+              </button>
+            </div>
+          </div>
 
-      {/* ── PRICING CARDS ── */}
-      <section style={{ backgroundColor: 'var(--warm-white)', padding: '80px 48px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '24px',
-          }}>
-            {plans.map(({ duration, label, price, features, popular }) => (
-              <div key={duration} style={{
-                backgroundColor: popular ? 'var(--dusk-indigo)' : 'var(--warm-white)',
-                border: popular ? '1px solid var(--gold)' : '1px solid var(--bone)',
-                borderRadius: 'var(--radius)',
-                padding: '40px 36px',
-                display: 'flex', flexDirection: 'column', gap: '20px',
-                position: 'relative',
-              }}>
-                {popular && (
-                  <span style={{
-                    position: 'absolute', top: '-1px', right: '-1px',
-                    backgroundColor: 'var(--gold)',
-                    color: 'var(--warm-white)',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '10px', fontWeight: 600,
-                    letterSpacing: '0.1em', textTransform: 'uppercase',
-                    padding: '6px 12px',
-                    borderRadius: '0 var(--radius) 0 var(--radius)',
-                  }}>Most Popular</span>
+          <div className="grid-3">
+            {plans.map((plan) => (
+              <article className="price-card" key={plan.label} style={{ background: plan.popular ? 'var(--teal-dark)' : undefined }}>
+                {plan.popular && (
+                  <span className="eyebrow" style={{ color: 'var(--gold-light)' }}>Most chosen</span>
                 )}
-
-                <div>
-                  <p style={{
-                    fontFamily: 'var(--font-body)', fontSize: '11px',
-                    fontWeight: 600, letterSpacing: '0.12em',
-                    textTransform: 'uppercase',
-                    color: 'var(--dusty)', marginBottom: '8px',
-                  }}>{duration}</p>
-                  <h3 style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '32px', fontWeight: 400,
-                    color: popular ? 'var(--gold-pale)' : 'var(--ink)',
-                  }}>{label}</h3>
+                <span className="icon-tile" style={{ background: plan.popular ? 'rgba(255,250,242,0.12)' : undefined, color: plan.popular ? 'var(--gold-light)' : undefined }}>
+                  {activeTab === 'consultancy' ? <Sparkles size={20} /> : <MoonStar size={20} />}
+                </span>
+                <h3 style={{ color: plan.popular ? 'var(--ivory)' : undefined }}>{plan.label}</h3>
+                <p style={{ color: plan.popular ? 'rgba(255,250,242,0.72)' : undefined }}>
+                  <Timer size={15} style={{ display: 'inline', marginRight: 6 }} />
+                  {plan.duration} minutes
+                </p>
+                <div style={{ margin: '22px 0' }}>
+                  <strong style={{ color: plan.popular ? 'var(--gold-light)' : 'var(--teal-dark)', fontFamily: 'var(--font-mono)', fontSize: 30 }}>
+                    Rs. {plan.price.toLocaleString('en-IN')}
+                  </strong>
                 </div>
-
-                <div>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '28px', color: 'var(--gold)',
-                  }}>
-                    Rs. {price.toLocaleString('en-IN')}
-                  </span>
-                  <span style={{
-                    fontFamily: 'var(--font-body)', fontSize: '14px',
-                    color: 'var(--dusty)', marginLeft: '6px',
-                  }}>/ session</span>
-                </div>
-
-                <div style={{
-                  width: '100%', height: '1px',
-                  backgroundColor: popular ? 'rgba(226,216,200,0.15)' : 'var(--bone)',
-                }} />
-
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
-                  {features.map(f => (
-                    <li key={f} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                      <span style={{ color: 'var(--gold)', fontSize: '13px', marginTop: '2px', flexShrink: 0 }}>✓</span>
-                      <span style={{
-                        fontFamily: 'var(--font-body)', fontSize: '14px',
-                        color: popular ? 'var(--bone)' : 'var(--violet-grey)',
-                        lineHeight: 1.5,
-                      }}>{f}</span>
+                <ul className="list-clean" style={{ marginBottom: 26 }}>
+                  {plan.features.map((feature) => (
+                    <li key={feature} style={{ color: plan.popular ? 'rgba(255,250,242,0.76)' : undefined }}>
+                      <Check size={17} color="var(--clay)" />
+                      {feature}
                     </li>
                   ))}
                 </ul>
-
-                <Link
-                  href={`/book?type=${activeTab}&duration=${duration}`}
-                  className={popular ? 'btn btn-primary' : 'btn btn-secondary'}
-                  style={{ textAlign: 'center', display: 'block' }}>
+                <Link href={`/book?type=${activeTab}&duration=${plan.duration}`} className={plan.popular ? 'btn btn-primary' : 'btn btn-secondary'}>
                   Book this session
+                  <ArrowRight size={17} />
                 </Link>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── PACKAGES ── */}
-      <section style={{ backgroundColor: 'var(--parchment)', padding: '80px 48px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <span style={eyebrow}>Commit & Save</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400, color: 'var(--ink)',
-            marginBottom: '48px',
-          }}>
-            Packages for ongoing support.
-          </h2>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '24px',
-          }}>
-            {packages.map(({ name, type, price, original, saving, desc }) => (
-              <div key={name} style={{
-                backgroundColor: 'var(--warm-white)',
-                border: '1px solid var(--bone)',
-                borderRadius: 'var(--radius)',
-                padding: '36px 32px',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                  <div>
-                    <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: '10px',
-                      fontWeight: 600, letterSpacing: '0.12em',
-                      textTransform: 'uppercase', color: 'var(--gold)',
-                      display: 'block', marginBottom: '8px',
-                    }}>{type}</span>
-                    <h3 style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: 'var(--fs-heading-xl)',
-                      fontWeight: 500, color: 'var(--ink)',
-                    }}>{name}</h3>
-                  </div>
-                  <span style={{
-                    backgroundColor: 'var(--gold-pale)',
-                    border: '1px solid var(--gold)',
-                    color: 'var(--gold)',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '11px', fontWeight: 600,
-                    padding: '4px 10px',
-                    borderRadius: 'var(--radius)',
-                    whiteSpace: 'nowrap',
-                  }}>
-                    Save Rs. {saving.toLocaleString('en-IN')}
+      <section className="section" style={{ background: 'var(--paper)' }}>
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">Ongoing support</span>
+            <h2>Packages when one conversation is not enough.</h2>
+            <p>For longer transitions, repeated decisions, or when you want a steady support rhythm.</p>
+          </div>
+          <div className="grid-3">
+            {packages.map((pack) => (
+              <article className="card" key={pack.name}>
+                <span className="eyebrow">{pack.type}</span>
+                <h3 style={{ fontSize: 30, marginBottom: 12 }}>{pack.name}</h3>
+                <p style={{ color: 'var(--muted)', marginBottom: 22 }}>{pack.desc}</p>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 22 }}>
+                  <strong style={{ color: 'var(--teal-dark)', fontFamily: 'var(--font-mono)', fontSize: 28 }}>
+                    Rs. {pack.price.toLocaleString('en-IN')}
+                  </strong>
+                  <span style={{ color: 'var(--soft)', textDecoration: 'line-through' }}>
+                    Rs. {pack.original.toLocaleString('en-IN')}
                   </span>
                 </div>
-
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '12px' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '28px', color: 'var(--ink)' }}>
-                    Rs. {price.toLocaleString('en-IN')}
-                  </span>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: '14px',
-                    color: 'var(--dusty)', textDecoration: 'line-through',
-                  }}>
-                    Rs. {original.toLocaleString('en-IN')}
-                  </span>
-                </div>
-
-                <p style={{
-                  fontFamily: 'var(--font-body)', fontSize: 'var(--fs-body-sm)',
-                  color: 'var(--violet-grey)', lineHeight: 1.7, marginBottom: '24px',
-                }}>{desc}</p>
-
-                <Link href="/book" className="btn btn-secondary"
-                  style={{ display: 'block', textAlign: 'center' }}>
-                  Get this package
+                <Link href="/book" className="btn btn-secondary">
+                  Start package
                 </Link>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ── */}
-      <section style={{ backgroundColor: 'var(--warm-white)', padding: '80px 48px' }}>
-        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-          <span style={eyebrow}>Common Questions</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400, color: 'var(--ink)',
-            marginBottom: '48px',
-          }}>
-            Answered honestly.
-          </h2>
+      <section className="section">
+        <div className="container split" style={{ alignItems: 'start' }}>
+          <div className="section-heading">
+            <span className="eyebrow">Common questions</span>
+            <h2>Answered before you book.</h2>
+            <p>Still unsure which session fits? Ask first. That is part of the service.</p>
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, I would like to know which Serenova session is right for me.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+              style={{ marginTop: 24 }}
+            >
+              <MessageCircle size={18} />
+              Ask on WhatsApp
+            </a>
+          </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {faqs.map(({ q, a }, i) => (
-              <div key={i} style={{ borderBottom: '1px solid var(--bone)' }}>
-                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
-                  width: '100%', display: 'flex',
-                  justifyContent: 'space-between', alignItems: 'center',
-                  padding: '20px 0', background: 'none', border: 'none', cursor: 'pointer',
-                  textAlign: 'left',
-                }}>
-                  <span style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 'var(--fs-heading-md)',
-                    fontWeight: 600,
-                    color: openFaq === i ? 'var(--gold)' : 'var(--ink)',
-                    transition: 'color var(--dur-fast)',
-                  }}>{q}</span>
-                  <span style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '20px', color: 'var(--gold)',
-                    transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0)',
-                    transition: 'transform var(--dur-medium)',
-                    flexShrink: 0, marginLeft: '16px',
-                  }}>+</span>
+          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            {faqs.map(([q, a], index) => (
+              <div key={q} style={{ borderBottom: index < faqs.length - 1 ? '1px solid rgba(29,36,48,0.1)' : 0 }}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  style={{ width: '100%', padding: 22, display: 'flex', justifyContent: 'space-between', gap: 18, background: 'transparent', textAlign: 'left' }}
+                >
+                  <strong>{q}</strong>
+                  <span>{openFaq === index ? '-' : '+'}</span>
                 </button>
-                {openFaq === i && (
-                  <div style={{ paddingBottom: '20px' }}>
-                    <p style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 'var(--fs-body-md)',
-                      color: 'var(--violet-grey)', lineHeight: 1.8,
-                    }}>{a}</p>
-                  </div>
+                {openFaq === index && (
+                  <p style={{ padding: '0 22px 22px', color: 'var(--muted)' }}>{a}</p>
                 )}
               </div>
             ))}
           </div>
-
-          <div style={{ marginTop: '48px', textAlign: 'center' }}>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 'var(--fs-body-md)',
-              color: 'var(--violet-grey)', marginBottom: '16px',
-            }}>
-              Still unsure? Ask anything on WhatsApp →
-            </p>
-            
-            <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=Hi, I'd like to know which session is right for me.`}
-              target="_blank" rel="noopener noreferrer"
-              className="btn btn-whatsapp">
-              Chat on WhatsApp
-            </a>
-          </div>
         </div>
       </section>
-
     </div>
   )
 }

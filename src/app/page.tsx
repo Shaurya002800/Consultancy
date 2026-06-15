@@ -1,522 +1,247 @@
 'use client'
 
+import {
+  ArrowRight,
+  Calendar,
+  Compass,
+  HeartHandshake,
+  Map,
+  MessageCircle,
+  MoonStar,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
+import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
 
-// ── Ink Divider SVGs ────────────────────────────────────
-function InkDivider({ variant = 'A' }: { variant?: 'A' | 'B' | 'C' }) {
-  const paths = {
-    A: 'M0,12 C150,9 300,15 450,12 C600,9 750,15 900,12 C1050,9 1150,14 1200,12',
-    B: 'M0,12 C200,15 350,9 500,13 C650,17 800,8 950,12 C1050,14 1150,10 1200,12',
-    C: 'M0,12 C100,8 250,16 400,11 C550,6 700,16 850,12 C1000,8 1100,15 1200,12',
-  }
-  return (
-    <svg width="100%" height="24" viewBox="0 0 1200 24"
-      preserveAspectRatio="none" style={{ display: 'block', margin: '64px 0' }}>
-      <path d={paths[variant]} stroke="#C9956A" strokeOpacity="0.35"
-        strokeWidth="0.8" fill="none" />
-    </svg>
-  )
-}
+const pathways = [
+  {
+    key: 'clarity',
+    label: 'I need clarity',
+    title: 'Personal Consultancy',
+    copy: 'Private one-on-one guidance for relationships, career crossroads, grief, family pressure, and life transitions.',
+    price: 'From Rs. 800',
+    href: '/sessions',
+    icon: HeartHandshake,
+  },
+  {
+    key: 'timing',
+    label: 'I need timing',
+    title: 'Astrology + Guidance',
+    copy: 'A birth-chart reading paired with practical counsel, so the insight becomes a decision you can actually act on.',
+    price: 'From Rs. 1,800',
+    href: '/sessions',
+    icon: MoonStar,
+  },
+  {
+    key: 'travel',
+    label: 'My child needs support',
+    title: 'Companion Travel',
+    copy: 'A trusted adult companion for children and young travellers, with planning, safety check-ins, and family communication.',
+    price: 'Custom quote',
+    href: '/travel',
+    icon: Map,
+  },
+]
 
-// ── Shared styles ───────────────────────────────────────
-const eyebrow: React.CSSProperties = {
-  fontFamily: 'var(--font-body)',
-  fontSize: '11px',
-  fontWeight: 600,
-  letterSpacing: '0.15em',
-  textTransform: 'uppercase',
-  color: 'var(--gold)',
-  marginBottom: '16px',
-  display: 'block',
-}
+const proof = [
+  { value: '200+', label: 'private sessions completed' },
+  { value: '8+', label: 'years of guidance practice' },
+  { value: '3', label: 'ways to work with Serenova' },
+]
 
 export default function Home() {
+  const [active, setActive] = useState(pathways[0])
+  const ActiveIcon = active.icon
+
   return (
-    <div>
+    <div className="page-shell">
+      <section className="hero">
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <span className="eyebrow">Serenova Guidance Studio</span>
+            <h1>
+              A calmer way to make your <em>next decision.</em>
+            </h1>
+            <p>
+              Book private guidance, astrology-backed counsel, or family travel support from one trusted place. The experience is personal, practical, and built around what you are actually trying to solve.
+            </p>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 34 }}>
+              <Link href="/book" className="btn btn-primary">
+                <Calendar size={18} />
+                Book a Session
+              </Link>
+              <Link href="/travel" className="btn btn-ghost">
+                <Compass size={18} />
+                Plan Companion Travel
+              </Link>
+            </div>
+          </div>
 
-      {/* ══ 1. HERO ══════════════════════════════════════ */}
-      <section style={{
-        minHeight: '100vh',
-        backgroundColor: 'var(--dusk-indigo)',
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative', overflow: 'hidden',
-        padding: 'var(--sp-20) var(--gutter) var(--sp-16)',
-      }}>
-        {/* Breathing glow */}
-        <div className="hero-glow" style={{
-          position: 'absolute',
-          top: '40%', left: '50%',
-          width: '600px', height: '600px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(201,149,106,0.18) 0%, rgba(201,149,106,0) 70%)',
-          pointerEvents: 'none', zIndex: 0,
-          transform: 'translate(-50%, -40%)',
-        }} />
+          <div className="visual-board" aria-label="Serenova service pathways">
+            <div className="board-content">
+              <div style={{ marginBottom: 16 }}>
+                <SerenovaBrandPanel />
+              </div>
+              <div className="signal-card" style={{ marginBottom: 16 }}>
+                <p style={{ color: 'rgba(255,250,242,0.62)', fontSize: 12, marginBottom: 10 }}>Live guidance map</p>
+                <div className="signal-row">
+                  <ShieldCheck size={19} />
+                  <span>Private intake</span>
+                  <span>01</span>
+                </div>
+                <div className="signal-row">
+                  <MessageCircle size={19} />
+                  <span>Focused conversation</span>
+                  <span>02</span>
+                </div>
+                <div className="signal-row">
+                  <Sparkles size={19} />
+                  <span>Clear next step</span>
+                  <span>03</span>
+                </div>
+              </div>
+              <div className="pulse-line" />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
+                <div className="signal-card">
+                  <strong style={{ display: 'block', fontSize: 24 }}>24h</strong>
+                  <span style={{ color: 'rgba(255,250,242,0.64)', fontSize: 12 }}>booking response</span>
+                </div>
+                <div className="signal-card">
+                  <strong style={{ display: 'block', fontSize: 24 }}>100%</strong>
+                  <span style={{ color: 'rgba(255,250,242,0.64)', fontSize: 12 }}>confidential</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <div style={{
-          position: 'relative', zIndex: 1,
-          maxWidth: '800px', width: '100%',
-        }}>
-          <span style={eyebrow}>Serenova · Guidance & Astrology</span>
+      <section className="section-tight">
+        <div className="container">
+          <div className="metric-strip">
+            {proof.map((item) => (
+              <div className="metric" key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-xl)',
-            fontWeight: 300,
-            color: 'var(--ghost-white)',
-            lineHeight: 1.05,
-            letterSpacing: '-0.02em',
-            marginBottom: '28px',
-          }}>
-            You don't have to<br />
-            <em style={{
-              fontStyle: 'italic',
-              color: 'var(--gold-pale)',
-              fontWeight: 300,
-            }}>
-              figure it out alone.
-            </em>
-          </h1>
+      <section className="section">
+        <div className="container split">
+          <div>
+            <span className="eyebrow">Choose your starting point</span>
+            <h2 style={{ fontSize: 'var(--fs-display-md)', fontWeight: 500, marginBottom: 18 }}>
+              The business is simple: people come with uncertainty, Serenova helps them leave with direction.
+            </h2>
+            <p style={{ color: 'var(--muted)', fontSize: 'var(--fs-body-lg)' }}>
+              Some decisions need a listening ear. Some need astrology and timing. Some need a responsible adult your family can trust. Pick the path that fits today.
+            </p>
+          </div>
 
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'var(--fs-body-lg)',
-            color: 'var(--dusty)',
-            lineHeight: 1.7,
-            marginBottom: '48px',
-            maxWidth: '520px',
-          }}>
-            One conversation can change everything.
-          </p>
+          <div className="journey-panel" style={{ padding: 10 }}>
+            {pathways.map((item) => {
+              const Icon = item.icon
+              const selected = active.key === item.key
+              return (
+                <button
+                  key={item.key}
+                  className={`option-card ${selected ? 'active' : ''}`}
+                  onClick={() => setActive(item)}
+                  style={{ marginBottom: 10 }}
+                >
+                  <span className="icon-tile">
+                    <Icon size={20} />
+                  </span>
+                  <span style={{ flex: 1 }}>
+                    <strong style={{ display: 'block', color: 'var(--ink)' }}>{item.label}</strong>
+                    <span style={{ color: 'var(--muted)', fontSize: 13 }}>{item.title}</span>
+                  </span>
+                  <ArrowRight size={18} />
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '72px' }}>
+        <div className="container" style={{ marginTop: 34 }}>
+          <div className="service-card" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 22, alignItems: 'center' }}>
+            <span className="icon-tile">
+              <ActiveIcon size={22} />
+            </span>
+            <div>
+              <span className="eyebrow" style={{ marginBottom: 8 }}>{active.price}</span>
+              <h3 style={{ margin: 0 }}>{active.title}</h3>
+              <p style={{ marginTop: 8 }}>{active.copy}</p>
+            </div>
+            <Link href={active.href} className="btn btn-primary">
+              Explore
+              <ArrowRight size={17} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section dark-band">
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">What changes here</span>
+            <h2>From scattered thoughts to a practical next step.</h2>
+            <p>
+              Every offer is structured around one outcome: you should finish with more clarity than you arrived with.
+            </p>
+          </div>
+
+          <div className="grid-3">
+            {[
+              ['Listen', 'A private space where the full situation can come out without performance or judgment.'],
+              ['Decode', 'Patterns, timing, emotional context, and practical constraints are brought into one frame.'],
+              ['Act', 'You leave with a next step: a conversation to have, a boundary to hold, a trip plan, or a decision window.'],
+            ].map(([title, copy], index) => (
+              <div className="signal-card" key={title}>
+                <p style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)', marginBottom: 18 }}>0{index + 1}</p>
+                <h3 style={{ fontSize: 30, marginBottom: 10 }}>{title}</h3>
+                <p>{copy}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container split">
+          <div className="section-heading" style={{ marginBottom: 0 }}>
+            <span className="eyebrow">Ready when you are</span>
+            <h2>Book directly, compare sessions, or ask a question first.</h2>
+            <p>
+              No funnel pressure. Choose the route that gives you enough confidence to begin.
+            </p>
+          </div>
+          <div className="card" style={{ display: 'grid', gap: 14 }}>
             <Link href="/book" className="btn btn-primary">
+              <Calendar size={18} />
               Book a Session
             </Link>
-            <Link href="/sessions" className="btn btn-ghost">
-              Learn About Sessions
+            <Link href="/sessions" className="btn btn-secondary">
+              Compare Sessions
+              <ArrowRight size={17} />
             </Link>
-          </div>
-
-          {/* Credibility bar */}
-          <div style={{
-            paddingTop: '32px',
-            borderTop: '1px solid rgba(226,216,200,0.15)',
-            display: 'flex', gap: '48px', flexWrap: 'wrap',
-          }}>
-            {[
-              { num: '200+', label: 'Sessions completed' },
-              { num: '8+ yrs', label: 'In practice' },
-              { num: '100%', label: 'Strictly private' },
-            ].map(({ num, label }) => (
-              <div key={label}>
-                <p style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '18px',
-                  color: 'var(--gold)',
-                  lineHeight: 1,
-                  marginBottom: '4px',
-                }}>{num}</p>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '12px',
-                  color: 'var(--bone)',
-                  letterSpacing: '0.03em',
-                }}>{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 2. PAIN POINTS ═══════════════════════════════ */}
-      <section style={{
-        backgroundColor: 'var(--parchment)',
-        padding: 'var(--sp-12) var(--gutter)',
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <span style={eyebrow}>Sound familiar?</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400,
-            color: 'var(--ink)',
-            marginBottom: '0',
-            maxWidth: '640px',
-          }}>
-            You don't have to carry this alone.
-          </h2>
-
-          <InkDivider variant="A" />
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '24px',
-          }}>
-            {[
-              { icon: '◌', text: 'I can\'t stop worrying — the same thoughts loop and I can\'t find the off switch.' },
-              { icon: '◌', text: 'There\'s a big decision ahead and I don\'t know who to talk to about it honestly.' },
-              { icon: '◌', text: 'I feel lost in a life transition and need someone to help me find direction.' },
-              { icon: '◌', text: 'I don\'t know who to trust with something this personal.' },
-            ].map(({ icon, text }, i) => (
-              <div key={i} style={{
-                backgroundColor: 'var(--warm-sand)',
-                borderLeft: '3px solid var(--gold)',
-                borderRadius: 'var(--radius)',
-                padding: '32px 28px',
-                transition: 'transform var(--dur-medium) var(--ease-warm), box-shadow var(--dur-medium) var(--ease-warm)',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(201,149,106,0.12)'
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
-              }}>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 'var(--fs-body-md)',
-                  color: 'var(--violet-grey)',
-                  lineHeight: 1.7,
-                }}>{text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 3. SERVICES ══════════════════════════════════ */}
-      <section style={{
-        backgroundColor: 'var(--warm-white)',
-        padding: 'var(--sp-12) var(--gutter)',
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <span style={eyebrow}>What Serenova Offers</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400,
-            color: 'var(--ink)',
-            marginBottom: '0',
-          }}>
-            Three ways to find your way forward.
-          </h2>
-
-          <InkDivider variant="B" />
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '24px',
-            marginBottom: '48px',
-          }}>
-            {[
-              {
-                icon: '◈',
-                title: 'Personal Consultancy',
-                desc: 'A one-on-one space to be heard without judgment. For relationships, career, grief, or anything weighing on your mind.',
-                price: '800',
-                href: '/sessions',
-              },
-              {
-                icon: '◈',
-                title: 'Astrology + Guidance',
-                desc: 'Your birth chart decoded and then worked through together. Cosmic perspective meets lived wisdom.',
-                price: '1,800',
-                href: '/sessions',
-              },
-              {
-                icon: '◈',
-                title: 'Companion Travel',
-                desc: 'A trusted adult companion for your child\'s journey. You stay home. They explore freely. You have peace of mind.',
-                price: null,
-                href: '/travel',
-              },
-            ].map(({ icon, title, desc, price, href }) => (
-              <div key={title} style={{
-                backgroundColor: 'var(--parchment)',
-                border: '1px solid var(--bone)',
-                borderRadius: 'var(--radius)',
-                padding: '32px',
-                display: 'flex', flexDirection: 'column', gap: '16px',
-                transition: 'all var(--dur-medium) var(--ease-warm)',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--warm-sand)'
-                ;(e.currentTarget as HTMLElement).style.borderColor = 'var(--gold)'
-                ;(e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(201,149,106,0.12)'
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--parchment)'
-                ;(e.currentTarget as HTMLElement).style.borderColor = 'var(--bone)'
-                ;(e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
-                ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
-              }}>
-                <span style={{ fontSize: '32px', color: 'var(--gold)' }}>{icon}</span>
-                <h3 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'var(--fs-display-sm)',
-                  fontWeight: 400,
-                  color: 'var(--ink)',
-                  lineHeight: 1.2,
-                }}>{title}</h3>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 'var(--fs-body-md)',
-                  color: 'var(--violet-grey)',
-                  lineHeight: 1.7,
-                  flex: 1,
-                }}>{desc}</p>
-                <div style={{
-                  paddingTop: '16px',
-                  borderTop: '1px solid var(--bone)',
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                }}>
-                  <span style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '12px',
-                    color: 'var(--dusty)',
-                  }}>Starting from</span>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '18px',
-                    color: 'var(--gold)',
-                  }}>
-                    {price ? `Rs. ${price}` : 'Enquire'}
-                  </span>
-                </div>
-                <Link href={href} style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: 'var(--gold)',
-                  textDecoration: 'none',
-                  letterSpacing: '0.05em',
-                }}>
-                  Learn more →
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          {/* WhatsApp CTA */}
-          <div style={{ textAlign: 'center' }}>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 'var(--fs-body-md)',
-              color: 'var(--violet-grey)',
-              marginBottom: '16px',
-            }}>
-              Unsure which is right for you?
-            </p>
-            
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-              target="_blank" rel="noopener noreferrer"
-              className="btn btn-whatsapp">
-              Chat on WhatsApp
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 4. HOW IT WORKS ══════════════════════════════ */}
-      <section style={{
-        backgroundColor: 'var(--parchment)',
-        padding: 'var(--sp-10) var(--gutter)',
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <span style={eyebrow}>Your first step is easy</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400,
-            color: 'var(--ink)',
-            marginBottom: '64px',
-          }}>
-            Three steps, then you're heard.
-          </h2>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '0',
-            position: 'relative',
-          }}>
-            {[
-              { num: '01', title: 'Choose your session', desc: 'Pick the type of support that speaks to where you are right now.' },
-              { num: '02', title: 'Pick a time that works', desc: 'Browse available slots and book directly. Confirmation arrives immediately.' },
-              { num: '03', title: 'Show up as you are', desc: 'No preparation needed. Just come as you are. She meets you there.' },
-            ].map(({ num, title, desc }, i) => (
-              <div key={num} style={{
-                padding: '0 40px 0 0',
-                borderRight: i < 2 ? '1px solid var(--bone)' : 'none',
-                paddingRight: i < 2 ? '40px' : '0',
-                paddingLeft: i > 0 ? '40px' : '0',
-              }}>
-                {/* Ghost number */}
-                <div style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '72px',
-                  fontWeight: 300,
-                  color: 'var(--bone)',
-                  lineHeight: 1,
-                  marginBottom: '-16px',
-                  letterSpacing: '-0.03em',
-                }}>
-                  {num}
-                </div>
-                <h3 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'var(--fs-heading-lg)',
-                  fontWeight: 500,
-                  color: 'var(--ink)',
-                  marginBottom: '12px',
-                  position: 'relative',
-                  zIndex: 1,
-                }}>{title}</h3>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 'var(--fs-body-md)',
-                  color: 'var(--violet-grey)',
-                  lineHeight: 1.7,
-                }}>{desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: '56px' }}>
-            <Link href="/book" className="btn btn-primary">
-              Book Your First Session
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 5. TESTIMONIALS ══════════════════════════════ */}
-      <section style={{
-        backgroundColor: 'var(--dusk-indigo)',
-        padding: 'var(--sp-12) var(--gutter)',
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <span style={eyebrow}>What clients say</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400,
-            color: 'var(--gold-pale)',
-            marginBottom: '64px',
-          }}>
-            Real people. Real change.
-          </h2>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '24px',
-          }}>
-            {[
-              { quote: 'I came in feeling completely lost. After one session, I had a direction. She doesn\'t just listen — she helps you see what you already know.', name: 'R.M.', city: 'Delhi' },
-              { quote: 'The astrology session was unlike anything I expected. It felt like someone had read my entire life and handed me a map forward.', name: 'A.S.', city: 'Mumbai' },
-              { quote: 'My son traveled with her companion service. She kept him safe, engaged — he came back with stories I\'ll never forget.', name: 'M.R.', city: 'Bangalore' },
-            ].map(({ quote, name, city }) => (
-              <div key={name} style={{
-                backgroundColor: 'var(--twilight)',
-                borderLeft: '3px solid var(--gold)',
-                borderRadius: 'var(--radius)',
-                padding: '32px',
-              }}>
-                {/* Opening quote mark */}
-                <div style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '48px',
-                  color: 'var(--gold)',
-                  lineHeight: 0.8,
-                  marginBottom: '16px',
-                  opacity: 0.6,
-                }}>"</div>
-                <p style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '20px',
-                  fontStyle: 'italic',
-                  fontWeight: 400,
-                  color: 'var(--ghost-white)',
-                  lineHeight: 1.7,
-                  marginBottom: '28px',
-                }}>{quote}</p>
-                <div style={{
-                  width: '40px', height: '2px',
-                  backgroundColor: 'var(--gold)',
-                  marginBottom: '16px',
-                  opacity: 0.5,
-                }} />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{
-                    width: '32px', height: '32px', borderRadius: '50%',
-                    backgroundColor: 'var(--gold)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '14px', fontWeight: 500,
-                    color: 'var(--warm-white)',
-                    flexShrink: 0,
-                  }}>
-                    {name[0]}
-                  </div>
-                  <p style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '14px',
-                    color: 'var(--dusty)',
-                  }}>{name}, {city}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ 6. CTA BANNER ════════════════════════════════ */}
-      <section style={{
-        backgroundColor: 'var(--gold-pale)',
-        padding: 'var(--sp-10) var(--gutter)',
-        textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400,
-            color: 'var(--ink)',
-            lineHeight: 1.2,
-            marginBottom: '24px',
-          }}>
-            Your next chapter starts with<br />one conversation.
-          </h2>
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'var(--fs-body-md)',
-            color: 'var(--slate)',
-            lineHeight: 1.7,
-            marginBottom: '40px',
-          }}>
-            No judgment. No scripts. Just you and someone who genuinely listens.
-          </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/book" className="btn btn-primary">Book a Session</Link>
-            
-            <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-              target="_blank" rel="noopener noreferrer"
-              className="btn btn-whatsapp">
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, I am not sure which Serenova service is right for me.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-secondary"
+            >
+              <MessageCircle size={18} />
               Ask on WhatsApp
             </a>
           </div>
         </div>
       </section>
-
     </div>
   )
 }

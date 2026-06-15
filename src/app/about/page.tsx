@@ -1,306 +1,158 @@
-'use client'
-
+import { ArrowRight, BookOpen, Heart, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
 
-function InkDivider({ variant = 'A' }: { variant?: 'A' | 'B' | 'C' }) {
-  const paths = {
-    A: 'M0,12 C150,9 300,15 450,12 C600,9 750,15 900,12 C1050,9 1150,14 1200,12',
-    B: 'M0,12 C200,15 350,9 500,13 C650,17 800,8 950,12 C1050,14 1150,10 1200,12',
-    C: 'M0,12 C100,8 250,16 400,11 C550,6 700,16 850,12 C1000,8 1100,15 1200,12',
-  }
-  return (
-    <svg width="100%" height="24" viewBox="0 0 1200 24" preserveAspectRatio="none"
-      style={{ display: 'block', margin: '64px 0' }}>
-      <path d={paths[variant]} stroke="#C9956A" strokeOpacity="0.35" strokeWidth="0.8" fill="none" />
-    </svg>
-  )
-}
+const values = [
+  ['Private by default', 'No recordings, no public case studies without consent, no performance.'],
+  ['Practical after insight', 'Every reading or conversation is translated into a next step.'],
+  ['Warm honesty', 'The truth is useful only when it is delivered with care.'],
+  ['Family-aware support', 'Guidance considers relationships, responsibilities, culture, and timing.'],
+]
 
-const eyebrow: React.CSSProperties = {
-  fontFamily: 'var(--font-body)', fontSize: '11px', fontWeight: 600,
-  letterSpacing: '0.15em', textTransform: 'uppercase',
-  color: 'var(--gold)', marginBottom: '16px', display: 'block',
-}
+const stories = [
+  ['Career Crossroads', 'A client came in certain they needed to quit. The work revealed they needed a role change, not an exit.'],
+  ['Relationship & Loss', 'A difficult ending became easier to process once the emotion had language and a plan.'],
+  ['Astrology & Timing', 'A chart session gave a family confidence around relocation timing and communication.'],
+]
 
 export default function AboutPage() {
   return (
-    <div>
-
-      {/* ── HERO ── */}
-      <section style={{
-        backgroundColor: 'var(--dusk-indigo)',
-        padding: '120px 48px 96px',
-      }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: '7fr 5fr',
-          gap: '80px', alignItems: 'center',
-        }}>
-          <div>
-            <span style={eyebrow}>About Serenova</span>
-            <h1 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'var(--fs-display-lg)',
-              fontWeight: 300, color: 'var(--gold-pale)',
-              lineHeight: 1.1, marginBottom: '28px',
-            }}>
-              She's been where<br />
-              <em style={{ fontStyle: 'italic' }}>you are now.</em>
+    <div className="page-shell">
+      <section className="hero" style={{ minHeight: '78vh' }}>
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <span className="eyebrow">About Serenova</span>
+            <h1>
+              Guidance with intuition, structure, and <em>lived care.</em>
             </h1>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 'var(--fs-body-lg)',
-              color: 'var(--bone)', lineHeight: 1.7,
-              maxWidth: '480px',
-            }}>
-              Over eight years of guiding people through life's hardest moments — with warmth, honesty, and a perspective that goes beyond the ordinary.
+            <p>
+              Serenova brings personal consultancy, astrology, and family travel support into one trust-led studio. The work is calm, direct, and centered on helping people feel less alone with decisions that matter.
+            </p>
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 34 }}>
+              <Link href="/sessions" className="btn btn-primary">
+                View Sessions
+                <ArrowRight size={17} />
+              </Link>
+              <a
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost"
+              >
+                <MessageCircle size={18} />
+                Start with a question
+              </a>
+            </div>
+          </div>
+
+          <div className="visual-board">
+            <div className="board-content">
+              <SerenovaBrandPanel />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-tight">
+        <div className="container">
+          <div className="metric-strip">
+            {[
+              ['8+', 'years in practice'],
+              ['200+', 'sessions completed'],
+              ['100%', 'private sessions'],
+            ].map(([value, label]) => (
+              <div className="metric" key={label}>
+                <strong>{value}</strong>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container split">
+          <div>
+            <span className="eyebrow">The approach</span>
+            <h2 style={{ fontSize: 'var(--fs-display-md)', fontWeight: 500, marginBottom: 22 }}>
+              Serenova is built for the quiet, complicated moments people usually carry alone.
+            </h2>
+            <p style={{ color: 'var(--muted)', fontSize: 'var(--fs-body-lg)' }}>
+              The method is not rigid. A session can be emotional, strategic, astrological, practical, or all of those at once. What stays consistent is the quality of attention: listen deeply, name the pattern, and help the client choose the next right move.
             </p>
           </div>
-
-          {/* Photo placeholder */}
-          <div style={{
-            aspectRatio: '4/5',
-            backgroundColor: 'var(--twilight)',
-            borderRadius: 'var(--radius)',
-            border: '2px solid var(--gold)',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center',
-            gap: '12px',
-          }}>
-            <div style={{
-              width: '72px', height: '72px', borderRadius: '50%',
-              backgroundColor: 'var(--gold)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: 'var(--font-display)', fontSize: '28px',
-              color: 'var(--warm-white)',
-            }}>S</div>
-            <p style={{
-              fontFamily: 'var(--font-body)', fontSize: '12px',
-              fontStyle: 'italic', color: 'var(--dusty)',
-            }}>Add your photo here</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CREDENTIAL BAR ── */}
-      <section style={{
-        backgroundColor: 'var(--gold-pale)',
-        padding: '40px 48px',
-      }}>
-        <div style={{
-          maxWidth: '1200px', margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '0',
-        }}>
-          {[
-            { num: '8+', label: 'Years in practice' },
-            { num: '200+', label: 'Sessions completed' },
-            { num: '3', label: 'Services offered' },
-            { num: '100%', label: 'Private, every session' },
-          ].map(({ num, label }, i) => (
-            <div key={label} style={{
-              textAlign: 'center', padding: '16px 24px',
-              borderRight: i < 3 ? '1px solid var(--bone)' : 'none',
-            }}>
-              <p style={{
-                fontFamily: 'var(--font-mono)', fontSize: '28px',
-                color: 'var(--gold)', lineHeight: 1, marginBottom: '6px',
-              }}>{num}</p>
-              <p style={{
-                fontFamily: 'var(--font-body)', fontSize: '12px',
-                color: 'var(--slate)',
-              }}>{label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── STORY ── */}
-      <section style={{ backgroundColor: 'var(--warm-white)', padding: '96px 48px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ maxWidth: '760px', margin: '0 auto' }}>
-            <span style={eyebrow}>Her Story</span>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'var(--fs-display-md)',
-              fontWeight: 400, color: 'var(--ink)', marginBottom: '0',
-            }}>
-              Guidance born from lived experience.
-            </h2>
-
-            <InkDivider variant="A" />
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '48px' }}>
-              {[
-                'She grew up watching people carry burdens in silence — and decided early on that she wanted to be the person who helped lift them.',
-                'With a background in counselling and a lifelong study of Vedic astrology, she brings together two worlds that most people keep separate: the deeply personal and the cosmically guided.',
-                'Over 200 people have sat across from her. Some came with grief. Some with confusion. Some with nothing but a feeling that something had to change. All of them left with more clarity than they arrived with.',
-              ].map((para, i) => (
-                <p key={i} style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 'var(--fs-body-lg)',
-                  color: 'var(--ink)', lineHeight: 1.8,
-                }}>{para}</p>
-              ))}
-            </div>
-
-            {/* Pull quote */}
-            <blockquote style={{
-              borderLeft: '3px solid var(--gold)',
-              paddingLeft: '28px', margin: '48px 0',
-            }}>
-              <p style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '26px', fontStyle: 'italic',
-                fontWeight: 400, color: 'var(--gold)',
-                lineHeight: 1.5,
-              }}>
-                "Her approach is simple: she listens first, judges never, and speaks only when her words will genuinely help."
+          <div className="card">
+            <blockquote style={{ borderLeft: '4px solid var(--clay)', paddingLeft: 22 }}>
+              <p style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--teal-dark)', lineHeight: 1.25 }}>
+                The goal is not to tell someone what to do. The goal is to help them hear themselves clearly.
               </p>
             </blockquote>
           </div>
+        </div>
+      </section>
 
-          {/* Values row */}
-          <InkDivider variant="B" />
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '32px',
-          }}>
-            {[
-              { icon: '◌', title: 'No Judgment', desc: 'Whatever you bring into the room stays in the room — heard without verdict.' },
-              { icon: '◌', title: 'No Scripts', desc: 'Every session is shaped by you. There is no standard template or fixed agenda.' },
-              { icon: '◌', title: 'No False Hope', desc: 'Honesty is kindness here. You\'ll always get the truth, delivered with care.' },
-              { icon: '◌', title: 'Full Presence', desc: 'When you\'re in a session, you have her complete, undivided attention.' },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} style={{ textAlign: 'center' }}>
-                <div style={{
-                  fontSize: '24px', color: 'var(--gold)',
-                  marginBottom: '12px',
-                }}>{icon}</div>
-                <h3 style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'var(--fs-heading-lg)',
-                  fontWeight: 500, color: 'var(--ink)',
-                  marginBottom: '8px',
-                }}>{title}</h3>
-                <p style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 'var(--fs-body-sm)',
-                  color: 'var(--violet-grey)', lineHeight: 1.7,
-                }}>{desc}</p>
-              </div>
-            ))}
+      <section className="section" style={{ background: 'var(--paper)' }}>
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">Working values</span>
+            <h2>Trust is the product.</h2>
+            <p>The UI now reflects the actual business: private service, clear options, and thoughtful guidance.</p>
+          </div>
+          <div className="grid-4">
+            {values.map(([title, copy], index) => {
+              const icons = [ShieldCheck, Sparkles, Heart, BookOpen]
+              const Icon = icons[index]
+              return (
+                <article className="service-card" key={title}>
+                  <span className="icon-tile">
+                    <Icon size={20} />
+                  </span>
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </article>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* ── TRANSFORMATION STORIES ── */}
-      <section style={{ backgroundColor: 'var(--parchment)', padding: '80px 48px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <span style={eyebrow}>Transformations</span>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-md)',
-            fontWeight: 400, color: 'var(--ink)',
-            marginBottom: '64px',
-          }}>
-            What changes after one session.
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {[
-              {
-                label: 'Career Crossroads',
-                headline: 'He came in certain he needed to quit.',
-                story: 'A 29-year-old engineer came in certain he needed to quit his job. After two sessions exploring what he actually wanted — not just what he was running from — he negotiated a role change instead. Last we heard, he leads a team he loves.',
-                attr: 'R.M., 34, Delhi',
-              },
-              {
-                label: 'Relationship & Loss',
-                headline: 'Three sessions gave her a language for grief.',
-                story: 'A woman processing a broken engagement found it impossible to talk to family without spiralling. Three sessions gave her a language for her grief and the courage to take it one day at a time. She started her own small business six months later.',
-                attr: 'P.S., 28, Mumbai',
-              },
-              {
-                label: 'Astrology & Clarity',
-                headline: 'The chart confirmed what their gut already knew.',
-                story: 'A couple at a crossroads about relocating abroad used an astrology + guidance session to understand the timing of their decision. The birth chart confirmed what their gut already knew. They moved. They\'re thriving.',
-                attr: 'A. & N., Pune',
-              },
-            ].map(({ label, headline, story, attr }, i) => (
-              <div key={i}>
-                <div style={{
-                  padding: '48px 0',
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 2fr',
-                  gap: '64px', alignItems: 'start',
-                }}>
-                  <div>
-                    <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: '10px',
-                      fontWeight: 600, letterSpacing: '0.15em',
-                      textTransform: 'uppercase', color: 'var(--gold)',
-                      display: 'block', marginBottom: '12px',
-                    }}>{label}</span>
-                    <p style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '24px', fontStyle: 'italic',
-                      fontWeight: 400, color: 'var(--ink)',
-                      lineHeight: 1.4,
-                    }}>{headline}</p>
-                  </div>
-                  <div>
-                    <p style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 'var(--fs-body-md)',
-                      color: 'var(--violet-grey)', lineHeight: 1.8,
-                      marginBottom: '16px',
-                    }}>{story}</p>
-                    <p style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 'var(--fs-body-sm)',
-                      color: 'var(--dusty)',
-                    }}>— {attr}</p>
-                  </div>
+      <section className="section dark-band">
+        <div className="container">
+          <div className="section-heading">
+            <span className="eyebrow">What clients bring</span>
+            <h2>Real situations, not neat categories.</h2>
+          </div>
+          <div style={{ display: 'grid', gap: 1, background: 'rgba(255,250,242,0.12)', borderRadius: 8, overflow: 'hidden' }}>
+            {stories.map(([label, story], index) => (
+              <div key={label} style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 24, padding: 28, background: 'rgba(255,250,242,0.08)' }}>
+                <div>
+                  <p style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)' }}>0{index + 1}</p>
+                  <h3 style={{ fontSize: 28 }}>{label}</h3>
                 </div>
-                {i < 2 && <InkDivider variant="C" />}
+                <p>{story}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section style={{
-        backgroundColor: 'var(--gold-pale)',
-        padding: '80px 48px', textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: '560px', margin: '0 auto' }}>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'var(--fs-display-sm)',
-            fontWeight: 400, color: 'var(--ink)',
-            lineHeight: 1.2, marginBottom: '20px',
-          }}>
-            Curious if this is right for you?
-          </h2>
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'var(--fs-body-md)',
-            color: 'var(--slate)', lineHeight: 1.8, marginBottom: '36px',
-          }}>
-            Browse the sessions to find what fits — or book directly. The first step is always the hardest, and she'll meet you right there.
-          </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/sessions" className="btn btn-primary">View Sessions</Link>
-            <Link href="/book" className="btn btn-secondary">Book Now</Link>
+      <section className="section">
+        <div className="container split">
+          <div className="section-heading" style={{ marginBottom: 0 }}>
+            <span className="eyebrow">Begin gently</span>
+            <h2>You can compare first or book directly.</h2>
+            <p>The first step can be as simple as asking which service fits your situation.</p>
+          </div>
+          <div className="card" style={{ display: 'grid', gap: 14 }}>
+            <Link href="/sessions" className="btn btn-primary">
+              View Sessions
+            </Link>
+            <Link href="/book" className="btn btn-secondary">
+              Book Now
+            </Link>
           </div>
         </div>
       </section>
-
     </div>
   )
 }

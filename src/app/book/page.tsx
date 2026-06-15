@@ -1,83 +1,151 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { ArrowLeft, ArrowRight, Calendar, Check, Clock, CreditCard, Lock, UserRound } from 'lucide-react'
+import Link from 'next/link'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { getAvailableTimesForDate, getBookingDateWindow, isDateWithinBookingWindow } from '@/lib/bookingRules'
+import {
+  buildBookingMessage,
+  validateBookingDetails,
+  type BookingDetailsErrors,
+} from '@/lib/bookingValidation'
 
 const SESSION_OPTIONS = {
   consultancy: [
-    { duration: 30, label: 'Quick Clarity — 30 min', price: 800 },
-    { duration: 60, label: 'Deep Dive — 60 min', price: 1400 },
-    { duration: 90, label: 'Full Session — 90 min', price: 1900 },
+    { duration: 30, label: '30 min', price: 800 },
+    { duration: 60, label: '60 min', price: 1400 },
+    { duration: 90, label: '90 min', price: 1900 },
   ],
   astrology: [
-    { duration: 60, label: 'Birth Chart Reading — 60 min', price: 1800 },
-    { duration: 90, label: 'Chart + Life Guidance — 90 min', price: 2400 },
+    { duration: 60, label: '60 min', price: 1800 },
+    { duration: 90, label: '90 min', price: 2400 },
   ],
 }
 
-const TIME_SLOTS = [
-  '10:00', '10:30', '11:00', '11:30',
-  '12:00', '12:30', '14:00', '14:30',
-  '15:00', '15:30', '16:00', '16:30',
-  '17:00', '17:30', '18:00', '18:30',
-]
+const STEPS = ['Session', 'Time', 'Details', 'Payment']
+
+function ProgressIndicator({ step }: { step: number }) {
+  return (
+    <nav className="progress-shell" aria-label="Booking progress">
+      <div className="progress-inner">
+        {STEPS.map((label, index) => {
+          const number = index + 1
+          return (
+            <div key={label} className={`progress-step ${step > number ? 'done' : ''} ${step === number ? 'active' : ''}`}>
+              <span>{label}</span>
+            </div>
+          )
+        })}
+      </div>
+    </nav>
+  )
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null
+  return <p className="field-error">{message}</p>
+}
 
 function BookingForm() {
   const searchParams = useSearchParams()
   const [step, setStep] = useState(1)
-  const [sessionType, setSessionType] = useState<'consultancy' | 'astrology'>(
-    (searchParams.get('type') as 'consultancy' | 'astrology') || 'consultancy'
+  const [sessionType, setSessionType] = useState<'consultancy' | 'astrology' | null>(
+    (searchParams.get('type') as 'consultancy' | 'astrology') || null
   )
-  const [selectedOption, setSelectedOption] = useState(SESSION_OPTIONS.consultancy[1])
+  const [duration, setDuration] = useState<number | null>(() => {
+    const d = searchParams.get('duration')
+    return d ? parseInt(d) : null
+  })
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
   const [takenTimes, setTakenTimes] = useState<string[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
+  const [dateError, setDateError] = useState('')
+  const [form, setForm] = useState({
+    name: '', email: '', phone: '',
+    dob: '', pob: '', tob: '', message: '',
+  })
+  const [formErrors, setFormErrors] = useState<BookingDetailsErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [bookingId, setBookingId] = useState('')
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
 
-  // Get min date (tomorrow)
-  const minDate = new Date()
-  minDate.setDate(minDate.getDate() + 1)
-  const minDateStr = minDate.toISOString().split('T')[0]
+  const { minDateStr, maxDateStr } = getBookingDateWindow()
+  const dateIsValid = selectedDate ? isDateWithinBookingWindow(selectedDate) : false
+  const availableTimes = selectedDate ? getAvailableTimesForDate(selectedDate, takenTimes) : []
 
-  // Get max date (60 days out)
-  const maxDate = new Date()
-  maxDate.setDate(maxDate.getDate() + 60)
-  const maxDateStr = maxDate.toISOString().split('T')[0]
-
-  useEffect(() => {
-    const opts = SESSION_OPTIONS[sessionType]
-    setSelectedOption(opts[1] || opts[0])
-  }, [sessionType])
-
-  useEffect(() => {
-    if (!selectedDate) return
-    setLoadingSlots(true)
+  const loadSlotsForDate = (date: string) => {
+    setSelectedDate(date)
     setSelectedTime('')
-    fetch(`/api/availability?date=${selectedDate}`)
-      .then(r => r.json())
-      .then(d => { setTakenTimes(d.takenTimes || []); setLoadingSlots(false) })
-      .catch(() => setLoadingSlots(false))
-  }, [selectedDate])
+    setTakenTimes([])
+    setDateError('')
+
+    if (!date) return
+
+    if (!isDateWithinBookingWindow(date)) {
+      setDateError(`Please choose a date between ${minDateStr} and ${maxDateStr}.`)
+      return
+    }
+
+    setLoadingSlots(true)
+    fetch(`/api/availability?date=${date}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTakenTimes(data.takenTimes || [])
+        if (data.error) setDateError(data.error)
+        setLoadingSlots(false)
+      })
+      .catch(() => {
+        setDateError('Could not load available times. Please try again.')
+        setLoadingSlots(false)
+      })
+  }
+
+  const selectedOption = sessionType && duration
+    ? SESSION_OPTIONS[sessionType].find((option) => option.duration === duration)
+    : null
+  const detailsPreview = validateBookingDetails(form, sessionType)
+
+  const updateForm = (field: keyof typeof form, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }))
+    setFormErrors((current) => ({ ...current, [field]: undefined }))
+    setError('')
+  }
 
   const handleBooking = async () => {
+    const validation = validateBookingDetails(form, sessionType)
+    if (!validation.success) {
+      setFormErrors(validation.errors)
+      setError('Please fix the highlighted details before continuing.')
+      return
+    }
+
     setSubmitting(true)
     setError('')
     try {
+      if (!isDateWithinBookingWindow(selectedDate) || !availableTimes.includes(selectedTime)) {
+        throw new Error('Please choose an available date and time.')
+      }
+
+      const details = validation.data
       const res = await fetch('/api/booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form,
+          name: details.name,
+          email: details.email,
+          phone: details.phone,
           session_type: sessionType,
-          duration: selectedOption.duration,
-          price: selectedOption.price,
+          duration: selectedOption?.duration,
+          price: selectedOption?.price,
           date: selectedDate,
           time: selectedTime,
+          dob: details.dob,
+          pob: details.pob,
+          tob: details.tob,
+          message: buildBookingMessage(details, sessionType),
         }),
       })
       const data = await res.json()
@@ -85,418 +153,394 @@ function BookingForm() {
       setBookingId(data.booking.id)
       setStep(4)
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
+      setError(e instanceof Error ? e.message : 'Please enter your name, email and phone number.')
     } finally {
       setSubmitting(false)
     }
   }
 
   const handlePayment = async () => {
+    const validation = validateBookingDetails(form, sessionType)
+    if (!validation.success) {
+      setFormErrors(validation.errors)
+      setStep(3)
+      setError('Please fix the highlighted details before payment.')
+      return
+    }
+
     setSubmitting(true)
+    setError('')
     try {
+      const details = validation.data
       const res = await fetch('/api/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, amount: selectedOption.price }),
+        body: JSON.stringify({ bookingId, amount: selectedOption?.price }),
       })
       const { orderId } = await res.json()
-
       const rzp = new (window as unknown as { Razorpay: new (opts: unknown) => { open: () => void } }).Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: selectedOption.price * 100,
+        amount: (selectedOption?.price || 0) * 100,
         currency: 'INR',
         order_id: orderId,
         name: 'Serenova',
-        description: selectedOption.label,
-        prefill: { name: form.name, email: form.email, contact: form.phone },
-        theme: { color: '#C4956A' },
+        description: `${sessionType} session - ${selectedOption?.label}`,
+        prefill: { name: details.name, email: details.email, contact: details.phone },
+        method: 'upi',
+        theme: { color: '#c36b50' },
+        readonly: { email: true, contact: true },
+        modal: {
+          ondismiss: () => setSubmitting(false),
+        },
         handler: () => setDone(true),
       })
       rzp.open()
     } catch {
-      setError('Payment setup failed. Please try again.')
+      setError("Payment couldn't be completed. Nothing was charged. Please try again or reach out on WhatsApp.")
     } finally {
       setSubmitting(false)
     }
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '13px 16px',
-    borderRadius: '10px', border: '1px solid #E8D5B7',
-    backgroundColor: '#fff', color: '#2C3E50',
-    fontSize: '15px', fontFamily: 'var(--font-body)', outline: 'none',
+  if (done) {
+    return (
+      <div className="container" style={{ padding: '128px var(--gutter)', maxWidth: 760 }}>
+        <div className="form-panel" style={{ textAlign: 'center' }}>
+          <span className="icon-tile" style={{ width: 64, height: 64, margin: '0 auto 22px', color: 'var(--success)' }}>
+            <Check size={34} />
+          </span>
+          <span className="eyebrow">Booking confirmed</span>
+          <h1 style={{ fontSize: 'var(--fs-display-sm)', marginBottom: 14 }}>Your session is reserved.</h1>
+          <p style={{ color: 'var(--muted)', marginBottom: 26 }}>
+            You will receive a WhatsApp message shortly with session details.
+          </p>
+          <div className="card" style={{ boxShadow: 'none', marginBottom: 24 }}>
+            {selectedDate} at {selectedTime} IST - {sessionType === 'consultancy' ? 'Personal Consultancy' : 'Astrology + Guidance'} ({selectedOption?.label})
+          </div>
+          <Link href="/" className="btn btn-primary">Return home</Link>
+        </div>
+      </div>
+    )
   }
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: '11px', letterSpacing: '0.1em',
-    textTransform: 'uppercase' as const,
-    color: '#8A7968', marginBottom: '8px', display: 'block',
-  }
-
-  if (done) return (
-    <div style={{ textAlign: 'center', padding: '48px 24px' }}>
-      <div style={{ fontSize: '48px', marginBottom: '24px' }}>✨</div>
-      <h2 style={{
-        fontFamily: 'var(--font-display)', fontSize: '32px',
-        fontWeight: 500, color: '#0D0D0D', marginBottom: '16px',
-      }}>
-        You're all set.
-      </h2>
-      <p style={{ fontSize: '16px', color: '#4A5F74', lineHeight: 1.8, marginBottom: '8px' }}>
-        Your session is confirmed for <strong>{selectedDate}</strong> at <strong>{selectedTime}</strong>.
-      </p>
-      <p style={{ fontSize: '15px', color: '#8A7968' }}>
-        A confirmation will be sent to {form.email}. See you soon.
-      </p>
-    </div>
-  )
 
   return (
-    <div>
-      {/* Progress bar */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '48px' }}>
-        {['Session', 'Date & Time', 'Your Details', 'Payment'].map((label, i) => (
-          <div key={label} style={{ flex: 1 }}>
-            <div style={{
-              height: '3px', borderRadius: '999px',
-              backgroundColor: step > i + 1 ? '#C4956A' : step === i + 1 ? '#C4956A' : '#E8D5B7',
-              marginBottom: '8px',
-              opacity: step === i + 1 ? 1 : step > i + 1 ? 0.6 : 0.3,
-            }} />
-            <p style={{
-              fontSize: '11px', color: step >= i + 1 ? '#C4956A' : '#8A7968',
-              textAlign: 'center', letterSpacing: '0.05em',
-            }}>
-              {label}
+    <>
+      <ProgressIndicator step={step} />
+      <section className="section" style={{ paddingTop: 52 }}>
+        <div className="container split" style={{ alignItems: 'start' }}>
+          <aside className="card" style={{ position: 'sticky', top: 118 }}>
+            <span className="eyebrow">Booking desk</span>
+            <h1 style={{ fontSize: 'var(--fs-display-sm)', marginBottom: 14 }}>Reserve a private session.</h1>
+            <p style={{ color: 'var(--muted)', marginBottom: 24 }}>
+              Choose the service, select a slot, share details, and pay securely through Razorpay.
             </p>
-          </div>
-        ))}
-      </div>
+            <div style={{ display: 'grid', gap: 12 }}>
+              <div className="signal-row" style={{ color: 'var(--ink)', borderColor: 'rgba(29,36,48,0.1)' }}>
+                <Lock size={18} />
+                <span>Private details</span>
+                <strong>Safe</strong>
+              </div>
+              <div className="signal-row" style={{ color: 'var(--ink)', borderColor: 'rgba(29,36,48,0.1)' }}>
+                <Clock size={18} />
+                <span>Times shown</span>
+                <strong>IST</strong>
+              </div>
+              <div className="signal-row" style={{ color: 'var(--ink)', borderColor: 'rgba(29,36,48,0.1)' }}>
+                <CreditCard size={18} />
+                <span>Payment</span>
+                <strong>Razorpay</strong>
+              </div>
+            </div>
+          </aside>
 
-      {/* Step 1 — Choose session */}
-      {step === 1 && (
-        <div>
-          <h2 style={{
-            fontFamily: 'var(--font-display)', fontSize: '26px',
-            fontWeight: 500, color: '#0D0D0D', marginBottom: '8px',
-          }}>
-            Choose your session
-          </h2>
-          <p style={{ fontSize: '14px', color: '#8A7968', marginBottom: '32px' }}>
-            What kind of support are you looking for?
-          </p>
-
-          {/* Type toggle */}
-          <div style={{
-            display: 'flex', backgroundColor: '#F7F2EA',
-            borderRadius: '999px', padding: '4px',
-            width: 'fit-content', marginBottom: '32px',
-            border: '1px solid #E8D5B7',
-          }}>
-            {(['consultancy', 'astrology'] as const).map(t => (
-              <button key={t} onClick={() => setSessionType(t)} style={{
-                padding: '9px 22px', borderRadius: '999px',
-                border: 'none', cursor: 'pointer',
-                fontSize: '13px', fontWeight: 500,
-                backgroundColor: sessionType === t ? '#C4956A' : 'transparent',
-                color: sessionType === t ? '#fff' : '#8A7968',
-                fontFamily: 'var(--font-body)', transition: 'all 0.2s',
-              }}>
-                {t === 'consultancy' ? 'Consultancy' : 'Astrology'}
-              </button>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-            {SESSION_OPTIONS[sessionType].map(opt => (
-              <div key={opt.duration} onClick={() => setSelectedOption(opt)} style={{
-                padding: '20px 24px', borderRadius: '14px', cursor: 'pointer',
-                border: selectedOption.duration === opt.duration
-                  ? '2px solid #C4956A' : '1px solid #E8D5B7',
-                backgroundColor: selectedOption.duration === opt.duration ? '#FDF6EE' : '#fff',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                transition: 'all 0.15s',
-              }}>
+          <div className="form-panel">
+            {step === 1 && (
+              <div style={{ display: 'grid', gap: 24 }}>
                 <div>
-                  <p style={{ fontSize: '15px', fontWeight: 500, color: '#0D0D0D' }}>{opt.label}</p>
+                  <span className="eyebrow">Step 1</span>
+                  <h2 style={{ fontSize: 'var(--fs-display-sm)' }}>What kind of session are you looking for?</h2>
                 </div>
-                <p style={{
-                  fontFamily: 'var(--font-mono)', fontSize: '18px',
-                  color: '#C4956A', fontWeight: 400,
-                }}>
-                  ₹{opt.price.toLocaleString('en-IN')}
-                </p>
-              </div>
-            ))}
-          </div>
 
-          <button onClick={() => setStep(2)} style={{
-            width: '100%', padding: '15px',
-            borderRadius: '999px', border: 'none',
-            backgroundColor: '#C4956A', color: '#fff',
-            fontSize: '15px', fontWeight: 500,
-            cursor: 'pointer', fontFamily: 'var(--font-body)',
-          }}>
-            Continue →
-          </button>
-        </div>
-      )}
-
-      {/* Step 2 — Date & Time */}
-      {step === 2 && (
-        <div>
-          <h2 style={{
-            fontFamily: 'var(--font-display)', fontSize: '26px',
-            fontWeight: 500, color: '#0D0D0D', marginBottom: '8px',
-          }}>
-            Pick a date & time
-          </h2>
-          <p style={{ fontSize: '14px', color: '#8A7968', marginBottom: '32px' }}>
-            All times are in IST (India Standard Time).
-          </p>
-
-          <div style={{ marginBottom: '28px' }}>
-            <label style={labelStyle}>Select date</label>
-            <input
-              type="date" value={selectedDate}
-              min={minDateStr} max={maxDateStr}
-              onChange={(e: { target: { value: any } }) => setSelectedDate(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
-
-          {selectedDate && (
-            <div style={{ marginBottom: '32px' }}>
-              <label style={labelStyle}>
-                {loadingSlots ? 'Loading available slots...' : 'Select time'}
-              </label>
-              <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px',
-              }}>
-                {TIME_SLOTS.map(slot => {
-                  const taken = takenTimes.includes(slot)
-                  const selected = selectedTime === slot
-                  return (
-                    <button key={slot} disabled={taken || loadingSlots}
-                      onClick={() => setSelectedTime(slot)} style={{
-                        padding: '11px 0', borderRadius: '10px',
-                        border: selected ? '2px solid #C4956A' : '1px solid #E8D5B7',
-                        backgroundColor: taken ? '#F5F5F5' : selected ? '#FDF6EE' : '#fff',
-                        color: taken ? '#ccc' : selected ? '#C4956A' : '#2C3E50',
-                        fontSize: '13px', fontWeight: 500,
-                        cursor: taken ? 'not-allowed' : 'pointer',
-                        fontFamily: 'var(--font-body)',
-                        textDecoration: taken ? 'line-through' : 'none',
-                      }}>
-                      {slot}
+                <div style={{ display: 'grid', gap: 12 }}>
+                  {[
+                    { type: 'consultancy' as const, title: 'Personal Consultancy', desc: 'Relationships, career, family, grief, or life transitions' },
+                    { type: 'astrology' as const, title: 'Astrology + Guidance', desc: 'Birth chart reading with practical life guidance' },
+                  ].map((item) => (
+                    <button
+                      key={item.type}
+                      onClick={() => {
+                        setSessionType(item.type)
+                        setDuration(null)
+                      }}
+                      className={`option-card ${sessionType === item.type ? 'active' : ''}`}
+                    >
+                      <span className="icon-tile">
+                        {item.type === 'consultancy' ? <UserRound size={20} /> : <Calendar size={20} />}
+                      </span>
+                      <span style={{ flex: 1 }}>
+                        <strong style={{ display: 'block' }}>{item.title}</strong>
+                        <span style={{ color: 'var(--muted)', fontSize: 13 }}>{item.desc}</span>
+                      </span>
                     </button>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button onClick={() => setStep(1)} style={{
-              flex: 1, padding: '15px', borderRadius: '999px',
-              border: '1.5px solid #E8D5B7', backgroundColor: 'transparent',
-              color: '#8A7968', fontSize: '15px', cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-            }}>
-              ← Back
-            </button>
-            <button
-              onClick={() => setStep(3)}
-              disabled={!selectedDate || !selectedTime}
-              style={{
-                flex: 2, padding: '15px', borderRadius: '999px',
-                border: 'none',
-                backgroundColor: selectedDate && selectedTime ? '#C4956A' : '#E8D5B7',
-                color: '#fff', fontSize: '15px', fontWeight: 500,
-                cursor: selectedDate && selectedTime ? 'pointer' : 'not-allowed',
-                fontFamily: 'var(--font-body)',
-              }}>
-              Continue →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3 — Details */}
-      {step === 3 && (
-        <div>
-          <h2 style={{
-            fontFamily: 'var(--font-display)', fontSize: '26px',
-            fontWeight: 500, color: '#0D0D0D', marginBottom: '8px',
-          }}>
-            Your details
-          </h2>
-          <p style={{ fontSize: '14px', color: '#8A7968', marginBottom: '32px' }}>
-            All information is kept confidential.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
-            <div>
-              <label style={labelStyle}>Full name</label>
-              <input value={form.name} onChange={(e: { target: { value: any } }) => setForm({ ...form, name: e.target.value })}
-                placeholder="Your name" style={inputStyle} />
-            </div>
-            <div>
-              <label style={labelStyle}>Email address</label>
-              <input type="email" value={form.email} onChange={(e: { target: { value: any } }) => setForm({ ...form, email: e.target.value })}
-                placeholder="you@email.com" style={inputStyle} />
-            </div>
-            <div>
-              <label style={labelStyle}>WhatsApp / Phone</label>
-              <input value={form.phone} onChange={(e: { target: { value: any } }) => setForm({ ...form, phone: e.target.value })}
-                placeholder="+91 98765 43210" style={inputStyle} />
-            </div>
-            <div>
-              <label style={labelStyle}>Anything you'd like her to know beforehand <span style={{ color: '#C4956A' }}>(optional)</span></label>
-              <textarea value={form.message} onChange={(e: { target: { value: any } }) => setForm({ ...form, message: e.target.value })}
-                rows={3} placeholder="Context, concerns, what's been on your mind..."
-                style={{ ...inputStyle, resize: 'vertical' }} />
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div style={{
-            backgroundColor: '#F7F2EA', borderRadius: '14px',
-            padding: '20px 24px', marginBottom: '28px',
-            border: '1px solid #E8D5B7',
-          }}>
-            <p style={{ fontSize: '12px', color: '#8A7968', marginBottom: '12px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Booking summary
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {[
-                ['Session', selectedOption.label],
-                ['Date', selectedDate],
-                ['Time', `${selectedTime} IST`],
-                ['Total', `₹${selectedOption.price.toLocaleString('en-IN')}`],
-              ].map(([k, v]) => (
-                <div key={k} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '13px', color: '#8A7968' }}>{k}</span>
-                  <span style={{ fontSize: '13px', color: '#0D0D0D', fontWeight: 500 }}>{v}</span>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {error && <p style={{ color: '#E53E3E', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
+                {sessionType && (
+                  <div>
+                    <p className="field-label" style={{ marginBottom: 10 }}>Choose duration</p>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                      {SESSION_OPTIONS[sessionType].map((option) => (
+                        <button
+                          key={option.duration}
+                          onClick={() => setDuration(option.duration)}
+                          className={`tab ${duration === option.duration ? 'active' : ''}`}
+                        >
+                          {option.label} - Rs. {option.price.toLocaleString('en-IN')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button onClick={() => setStep(2)} style={{
-              flex: 1, padding: '15px', borderRadius: '999px',
-              border: '1.5px solid #E8D5B7', backgroundColor: 'transparent',
-              color: '#8A7968', fontSize: '15px', cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-            }}>
-              ← Back
-            </button>
-            <button
-              onClick={handleBooking}
-              disabled={!form.name || !form.email || !form.phone || submitting}
-              style={{
-                flex: 2, padding: '15px', borderRadius: '999px', border: 'none',
-                backgroundColor: form.name && form.email && form.phone ? '#C4956A' : '#E8D5B7',
-                color: '#fff', fontSize: '15px', fontWeight: 500,
-                cursor: form.name && form.email && form.phone ? 'pointer' : 'not-allowed',
-                fontFamily: 'var(--font-body)',
-              }}>
-              {submitting ? 'Saving...' : 'Confirm & Pay →'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 4 — Payment */}
-      {step === 4 && (
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '40px', marginBottom: '20px' }}>🔒</div>
-          <h2 style={{
-            fontFamily: 'var(--font-display)', fontSize: '26px',
-            fontWeight: 500, color: '#0D0D0D', marginBottom: '12px',
-          }}>
-            One last step
-          </h2>
-          <p style={{ fontSize: '15px', color: '#4A5F74', lineHeight: 1.8, marginBottom: '32px' }}>
-            Your slot is held for 10 minutes. Complete payment to confirm your session.
-          </p>
-
-          <div style={{
-            backgroundColor: '#F7F2EA', borderRadius: '14px',
-            padding: '24px', marginBottom: '32px',
-            border: '1px solid #E8D5B7', textAlign: 'left',
-          }}>
-            {[
-              ['Session', selectedOption.label],
-              ['Date', selectedDate],
-              ['Time', `${selectedTime} IST`],
-              ['Amount', `₹${selectedOption.price.toLocaleString('en-IN')}`],
-            ].map(([k, v]) => (
-              <div key={k} style={{
-                display: 'flex', justifyContent: 'space-between',
-                padding: '8px 0', borderBottom: '1px solid #E8D5B7',
-              }}>
-                <span style={{ fontSize: '13px', color: '#8A7968' }}>{k}</span>
-                <span style={{ fontSize: '13px', color: '#0D0D0D', fontWeight: 500 }}>{v}</span>
+                <button onClick={() => setStep(2)} disabled={!sessionType || !duration} className="btn btn-primary">
+                  Continue
+                  <ArrowRight size={17} />
+                </button>
               </div>
-            ))}
+            )}
+
+            {step === 2 && (
+              <div style={{ display: 'grid', gap: 24 }}>
+                <div>
+                  <span className="eyebrow">Step 2</span>
+                  <h2 style={{ fontSize: 'var(--fs-display-sm)' }}>Pick a date and time.</h2>
+                  <p style={{ color: 'var(--muted)', marginTop: 8 }}>
+                    All times are in IST. You can book from {minDateStr} to {maxDateStr}.
+                  </p>
+                </div>
+
+                <div className="field">
+                  <label>Select date</label>
+                  <input className="input" type="date" value={selectedDate} min={minDateStr} max={maxDateStr} onChange={(e) => loadSlotsForDate(e.target.value)} />
+                  {dateError && <p style={{ color: 'var(--error)', fontSize: 13 }}>{dateError}</p>}
+                </div>
+
+                {selectedDate && dateIsValid && (
+                  <div>
+                    <p className="field-label" style={{ marginBottom: 10 }}>
+                      {loadingSlots ? 'Loading available times' : `Available times for ${selectedDate}`}
+                    </p>
+                    {loadingSlots ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+                        {[1, 2, 3].map((item) => (
+                          <button
+                            key={item}
+                            disabled
+                            className="tab"
+                            style={{ opacity: 0.45 }}
+                          >
+                            Loading
+                          </button>
+                        ))}
+                      </div>
+                    ) : availableTimes.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
+                        {availableTimes.map((slot) => {
+                          const selected = selectedTime === slot
+                          return (
+                            <button
+                              key={slot}
+                              disabled={loadingSlots}
+                              onClick={() => setSelectedTime(slot)}
+                              className={`tab ${selected ? 'active' : ''}`}
+                            >
+                              {slot}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <p style={{ color: 'var(--muted)' }}>
+                        No available times for this date. Please choose another date in the booking window.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={() => setStep(1)} className="btn btn-secondary" style={{ flex: 1 }}>
+                    <ArrowLeft size={17} />
+                    Back
+                  </button>
+                  <button onClick={() => setStep(3)} disabled={!dateIsValid || !selectedTime || !availableTimes.includes(selectedTime)} className="btn btn-primary" style={{ flex: 2 }}>
+                    Continue
+                    <ArrowRight size={17} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div style={{ display: 'grid', gap: 22 }}>
+                <div>
+                  <span className="eyebrow">Step 3</span>
+                  <h2 style={{ fontSize: 'var(--fs-display-sm)' }}>Your details.</h2>
+                </div>
+
+                <div className="field">
+                  <label>Full name *</label>
+                  <input
+                    className="input"
+                    value={form.name}
+                    onChange={(e) => updateForm('name', e.target.value)}
+                    placeholder="Your full name"
+                    autoComplete="name"
+                    maxLength={80}
+                  />
+                  <FieldError message={formErrors.name} />
+                </div>
+                <div className="field">
+                  <label>Email address *</label>
+                  <input
+                    className="input"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => updateForm('email', e.target.value)}
+                    placeholder="you@email.com"
+                    autoComplete="email"
+                  />
+                  <FieldError message={formErrors.email} />
+                </div>
+                <div className="field">
+                  <label>Phone number *</label>
+                  <input
+                    className="input"
+                    type="tel"
+                    inputMode="numeric"
+                    value={form.phone}
+                    onChange={(e) => updateForm('phone', e.target.value)}
+                    placeholder="+91 98765 43210"
+                    autoComplete="tel"
+                    maxLength={14}
+                  />
+                  <FieldError message={formErrors.phone} />
+                </div>
+
+                {sessionType === 'astrology' && (
+                  <div className="card" style={{ boxShadow: 'none', display: 'grid', gap: 16 }}>
+                    <p style={{ color: 'var(--muted)' }}>Birth details help prepare your chart.</p>
+                    <div className="grid-2">
+                      <div className="field">
+                        <label>Date of birth</label>
+                        <input className="input" type="date" value={form.dob} max={minDateStr} onChange={(e) => updateForm('dob', e.target.value)} />
+                        <FieldError message={formErrors.dob} />
+                      </div>
+                      <div className="field">
+                        <label>Time of birth</label>
+                        <input className="input" type="time" value={form.tob} onChange={(e) => updateForm('tob', e.target.value)} />
+                        <FieldError message={formErrors.tob} />
+                      </div>
+                    </div>
+                    <div className="field">
+                      <label>Place of birth</label>
+                      <input className="input" value={form.pob} onChange={(e) => updateForm('pob', e.target.value)} placeholder="City, State" maxLength={80} />
+                      <FieldError message={formErrors.pob} />
+                    </div>
+                  </div>
+                )}
+
+                <div className="field">
+                  <label>Anything you would like her to know?</label>
+                  <textarea
+                    className="textarea"
+                    value={form.message}
+                    onChange={(e) => updateForm('message', e.target.value)}
+                    placeholder="Optional - share as little or as much as feels right."
+                    maxLength={500}
+                  />
+                  <FieldError message={formErrors.message} />
+                </div>
+
+                <p style={{ color: 'var(--soft)', fontSize: 13, display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <Lock size={15} />
+                  Your details are never shared. Sessions are strictly private.
+                </p>
+
+                {error && <p style={{ color: 'var(--error)' }}>{error}</p>}
+
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={() => setStep(2)} className="btn btn-secondary" style={{ flex: 1 }}>
+                    <ArrowLeft size={17} />
+                    Back
+                  </button>
+                  <button onClick={handleBooking} disabled={!form.name || !form.email || !form.phone || submitting} className="btn btn-primary" style={{ flex: 2 }}>
+                    {submitting ? 'Saving...' : 'Continue to Payment'}
+                    <ArrowRight size={17} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && selectedOption && (
+              <div style={{ display: 'grid', gap: 22 }}>
+                <button onClick={() => setStep(3)} className="btn btn-secondary" style={{ justifySelf: 'start' }}>
+                  <ArrowLeft size={17} />
+                  Edit details
+                </button>
+                <div>
+                  <span className="eyebrow">Step 4</span>
+                  <h2 style={{ fontSize: 'var(--fs-display-sm)' }}>Confirm and pay.</h2>
+                </div>
+
+                <div className="card" style={{ boxShadow: 'none' }}>
+                  <div style={{ display: 'grid', gap: 12, marginBottom: 22 }}>
+                    {[
+                      ['Session', `${sessionType === 'consultancy' ? 'Personal Consultancy' : 'Astrology + Guidance'} (${selectedOption.label})`],
+                      ['Date', selectedDate],
+                      ['Time', `${selectedTime} IST`],
+                      ['Name', detailsPreview.success ? detailsPreview.data.name : form.name],
+                    ].map(([label, value]) => (
+                      <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+                        <span style={{ color: 'var(--muted)' }}>{label}</span>
+                        <strong style={{ textAlign: 'right' }}>{value}</strong>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ height: 1, background: 'rgba(29,36,48,0.1)', margin: '22px 0' }} />
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 24 }}>
+                    <strong>Total</strong>
+                    <strong style={{ color: 'var(--teal-dark)', fontFamily: 'var(--font-mono)', fontSize: 30 }}>
+                      Rs. {selectedOption.price.toLocaleString('en-IN')}
+                    </strong>
+                  </div>
+
+                  {error && <p style={{ color: 'var(--error)', marginBottom: 16 }}>{error}</p>}
+
+                  <button onClick={handlePayment} disabled={submitting} className="btn btn-primary" style={{ width: '100%' }}>
+                    <CreditCard size={18} />
+                    {submitting ? 'Opening payment...' : `Pay Rs. ${selectedOption.price.toLocaleString('en-IN')} Securely`}
+                  </button>
+                  <p style={{ color: 'var(--soft)', textAlign: 'center', fontSize: 12, marginTop: 14 }}>
+                    Powered by Razorpay. UPI opens first; cards, net banking, and wallets remain available.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-
-          {error && <p style={{ color: '#E53E3E', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
-
-          <button onClick={handlePayment} disabled={submitting} style={{
-            width: '100%', padding: '16px', borderRadius: '999px',
-            border: 'none', backgroundColor: '#C4956A', color: '#fff',
-            fontSize: '16px', fontWeight: 500, cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-          }}>
-            {submitting ? 'Opening payment...' : `Pay ₹${selectedOption.price.toLocaleString('en-IN')} →`}
-          </button>
-          <p style={{ fontSize: '12px', color: '#8A7968', marginTop: '12px' }}>
-            Secured by Razorpay · UPI, Cards, Net Banking accepted
-          </p>
         </div>
-      )}
-    </div>
+      </section>
+    </>
   )
 }
 
 export default function BookPage() {
   return (
-    <div style={{ backgroundColor: 'var(--parchment)', minHeight: '100vh' }}>
-      <div style={{
-        maxWidth: '560px', margin: '0 auto',
-        padding: '120px 24px 80px',
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <p style={{
-            fontSize: '11px', letterSpacing: '0.2em',
-            textTransform: 'uppercase', color: '#C4956A', marginBottom: '12px',
-          }}>
-            Book a Session
-          </p>
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(30px, 4vw, 44px)',
-            fontWeight: 500, color: '#0D0D0D', lineHeight: 1.2,
-          }}>
-            Reserve your time
-          </h1>
-        </div>
-
-        <div style={{
-          backgroundColor: '#fff', borderRadius: '24px',
-          padding: '40px', border: '1px solid #E8D5B7',
-          boxShadow: '0 4px 40px rgba(0,0,0,0.04)',
-        }}>
-          <Suspense fallback={<p style={{ color: '#8A7968', textAlign: 'center' }}>Loading...</p>}>
-            <BookingForm />
-          </Suspense>
-        </div>
-      </div>
+    <div className="page-shell" style={{ paddingTop: 74 }}>
+      <Suspense fallback={<p style={{ textAlign: 'center', padding: 80, color: 'var(--muted)' }}>Loading...</p>}>
+        <BookingForm />
+      </Suspense>
     </div>
   )
 }

@@ -1,15 +1,5 @@
-/// <reference types="react" />
 import { cn } from '@/lib/utils'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
-
-// Ensure JSX namespace exists in environments where @types/react isn't picked up.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elemName: string]: any
-    }
-  }
-}
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'outline' | 'ghost'

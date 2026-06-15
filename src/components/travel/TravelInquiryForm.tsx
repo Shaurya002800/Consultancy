@@ -50,7 +50,7 @@ export default function TravelInquiryForm() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         <div>
-          <label style={labelStyle}>Child's age</label>
+          <label style={labelStyle}>Child&apos;s age</label>
           <input name="age" required placeholder="e.g. 10 years" style={inputStyle} />
         </div>
         <div>

@@ -4,6 +4,7 @@ import Script from 'next/script'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import WhatsAppFAB from '@/components/ui/WhatsAppFAB'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Navbar />
         <main>{children}</main>
+        <WhatsAppFAB />
         <Footer />
         <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       </body>

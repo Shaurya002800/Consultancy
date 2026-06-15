@@ -1,117 +1,68 @@
 'use client'
 
+import { Calendar, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
-// ... rest of the file stays exactly the same
+import { SerenovaLockup } from '@/components/brand/SerenovaBrand'
 
+const navLinks = [
+  { href: '/sessions', label: 'Sessions & pricing' },
+  { href: '/book', label: 'Book a session' },
+  { href: '/travel', label: 'Companion travel' },
+  { href: '/about', label: 'About Serenova' },
+]
 
 export default function Footer() {
-  return (
-    <footer style={{ backgroundColor: 'var(--dusk-indigo)', color: 'var(--bone)' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 48px 40px' }}>
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '48px',
-          marginBottom: '64px',
-        }}>
-          {/* Brand */}
+  return (
+    <footer className="footer">
+      <div className="footer-inner">
+        <div className="footer-grid">
           <div>
-            <p style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '24px', fontWeight: 400,
-              color: 'var(--gold-pale)',
-              marginBottom: '4px',
-            }}>Serenova</p>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '9px', fontWeight: 600,
-              letterSpacing: '0.18em', textTransform: 'uppercase',
-              color: 'var(--dusty)', marginBottom: '20px',
-            }}>Guidance & Astrology</p>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '14px', color: 'var(--dusty)',
-              lineHeight: 1.7, maxWidth: '240px',
-            }}>
-              A safe space to be heard, guided, and understood.
+            <div style={{ marginBottom: 18 }}>
+              <SerenovaLockup />
+            </div>
+            <p style={{ maxWidth: 320 }}>
+              A private guidance studio for clarity sessions, astrology-backed counsel, and trusted companion travel for families.
             </p>
           </div>
 
-          {/* Navigation */}
           <div>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '11px', fontWeight: 600,
-              letterSpacing: '0.15em', textTransform: 'uppercase',
-              color: 'var(--gold)', marginBottom: '20px',
-            }}>Navigate</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/about', label: 'About' },
-                { href: '/sessions', label: 'Sessions & Pricing' },
-                { href: '/book', label: 'Book a Session' },
-                { href: '/travel', label: 'Companion Travel' },
-              ].map(({ href, label }) => (
-                <Link key={href} href={href} style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '14px',
-                  color: 'var(--dusty)',
-                  textDecoration: 'none',
-                  transition: 'color 150ms ease',
-                }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--gold)'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--dusty)'}>
-                  {label}
-                </Link>
-              ))}
-            </div>
+            <p className="footer-label">Explore</p>
+            {navLinks.map((link) => (
+              <Link key={link.href} href={link.href}>
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Contact */}
           <div>
-            <p style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: '11px', fontWeight: 600,
-              letterSpacing: '0.15em', textTransform: 'uppercase',
-              color: 'var(--gold)', marginBottom: '20px',
-            }}>Reach Out</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-                target="_blank" rel="noopener noreferrer"
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '14px', color: 'var(--dusty)',
-                  textDecoration: 'none', transition: 'color 150ms ease',
-                }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#25D366'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--dusty)'}>
-                WhatsApp →
+            <p className="footer-label">Reach</p>
+            <a href={`https://wa.me/${phone}`} target="_blank" rel="noopener noreferrer">
+              WhatsApp
+            </a>
+            <p>Mon-Sat, 10am-7pm IST</p>
+            <p>Online and in-person sessions</p>
+          </div>
+
+          <div>
+            <p className="footer-label">Start</p>
+            <div style={{ display: 'grid', gap: 12 }}>
+              <Link href="/book" className="btn btn-primary">
+                <Calendar size={17} />
+                Book
+              </Link>
+              <a href={`https://wa.me/${phone}`} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                <MessageCircle size={17} />
+                Ask first
               </a>
-              <p style={{ fontSize: '13px', color: 'var(--dusty)', fontFamily: 'var(--font-body)' }}>
-                Mon–Sat, 10am–7pm IST
-              </p>
-              <p style={{ fontSize: '13px', color: 'var(--dusty)', fontFamily: 'var(--font-body)' }}>
-                Online & In-person sessions
-              </p>
             </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div style={{
-          borderTop: '1px solid rgba(226,216,200,0.12)',
-          paddingTop: '32px',
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          flexWrap: 'wrap', gap: '12px',
-        }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--dusty)' }}>
-            © {new Date().getFullYear()} Serenova. All rights reserved.
-          </p>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '12px', color: 'var(--dusty)' }}>
-            Strictly private · Every session
-          </p>
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} Serenova. All rights reserved.</p>
+          <p>Private by default. Human first. No pressure.</p>
         </div>
       </div>
     </footer>
