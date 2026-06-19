@@ -1,8 +1,9 @@
 'use client'
 
-import { ArrowRight, CheckCircle2, Compass, MapPinned, MessageCircle, ShieldCheck, UserRoundCheck } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Compass, MessageCircle, ShieldCheck, UserRoundCheck } from 'lucide-react'
 import { useState } from 'react'
-import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
+import EditorialHero from '@/components/layout/EditorialHero'
+import RevealOnScroll from '@/components/ui/RevealOnScroll'
 
 const included = [
   ['Pre-trip planning', 'Itinerary, stay, activities, emergency contacts, and expectations agreed with the family.'],
@@ -30,66 +31,42 @@ export default function TravelPage() {
   }
 
   return (
-    <div className="page-shell">
-      <section className="hero" style={{ minHeight: '82vh', backgroundPosition: 'center 35%' }}>
-        <div className="hero-inner">
-          <div className="hero-copy">
-            <span className="eyebrow">Companion Travel</span>
-            <h1>
-              Your child explores freely. <em>You stay reassured.</em>
-            </h1>
-            <p>
-              A trusted adult companion for children and young travellers, designed for families who want independence, safety, communication, and a calmer way to say yes to travel.
-            </p>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 34 }}>
-              <a href="#inquire" className="btn btn-primary">
-                Start an Inquiry
-                <ArrowRight size={17} />
-              </a>
-              <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, I would like to ask about Companion Travel.")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-ghost"
-              >
-                <MessageCircle size={18} />
-                Ask on WhatsApp
-              </a>
-            </div>
-          </div>
-
-          <div className="visual-board">
-            <div className="board-content">
-              <div style={{ marginBottom: 16 }}>
-                <SerenovaBrandPanel />
-              </div>
-              <div className="signal-card">
-                <p style={{ color: 'var(--gold-light)', marginBottom: 18 }}>Family travel command center</p>
-                {[
-                  ['Route approved', 'Before departure'],
-                  ['Parent updates', 'During travel'],
-                  ['Return summary', 'After arrival'],
-                ].map(([label, timing]) => (
-                  <div className="signal-row" key={label}>
-                    <MapPinned size={18} />
-                    <span>{label}</span>
-                    <strong>{timing}</strong>
-                  </div>
-                ))}
-              </div>
-              <div className="pulse-line" style={{ marginTop: 18 }} />
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="page-shell editorial-page travel-page">
+      <EditorialHero
+        variant="travel"
+        eyebrow="Companion Travel"
+        title={<>Let them discover the world. <em>Stay close to every step.</em></>}
+        copy="Thoughtful travel companionship for children and young travellers, with the planning, safety, and family communication that make independence feel possible."
+        noteLabel="The promise"
+        note="Your child should feel free, never unattended. You should feel informed, never left wondering."
+        actions={(
+          <>
+            <a href="#inquire" className="btn btn-primary">
+              Start an Inquiry
+              <ArrowRight size={17} />
+            </a>
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, I would like to ask about Companion Travel.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              <MessageCircle size={18} />
+              Ask on WhatsApp
+            </a>
+          </>
+        )}
+      />
 
       <section className="section">
         <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">What is included</span>
-            <h2>More than a chaperone. A calm adult system around the trip.</h2>
-            <p>Companion travel works when parents know the plan and children feel supported without feeling controlled.</p>
-          </div>
+          <RevealOnScroll>
+            <div className="section-heading">
+              <span className="eyebrow">What is included</span>
+              <h2>More than a chaperone. A calm adult system around the trip.</h2>
+              <p>Companion travel works when parents know the plan and children feel supported without feeling controlled.</p>
+            </div>
+          </RevealOnScroll>
 
           <div className="grid-4">
             {included.map(([title, copy], index) => {
@@ -143,9 +120,9 @@ export default function TravelPage() {
             <h2>From inquiry to safe return.</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 1, background: 'rgba(255,250,242,0.12)', borderRadius: 8, overflow: 'hidden' }}>
+          <div className="travel-process-grid">
             {travelSteps.map(([title, copy], index) => (
-              <div key={title} style={{ padding: 24, background: 'rgba(255,250,242,0.08)' }}>
+              <div className="travel-process-step" key={title}>
                 <p style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)', marginBottom: 16 }}>0{index + 1}</p>
                 <h3 style={{ fontSize: 26, marginBottom: 10 }}>{title}</h3>
                 <p>{copy}</p>
@@ -157,7 +134,7 @@ export default function TravelPage() {
 
       <section className="section">
         <div className="container split">
-          <div className="card">
+          <div className="travel-pricing-panel">
             <span className="eyebrow">Pricing</span>
             <h2 style={{ fontSize: 'var(--fs-display-sm)', marginBottom: 14 }}>Every trip is priced individually.</h2>
             <p style={{ color: 'var(--muted)', marginBottom: 18 }}>
@@ -166,7 +143,7 @@ export default function TravelPage() {
             <p style={{ color: 'var(--soft)' }}>The discovery call is free. No commitment until the plan feels right.</p>
           </div>
 
-          <div id="inquire" className="form-panel">
+          <div id="inquire" className="form-panel travel-inquiry-panel">
             <span className="eyebrow">Start an inquiry</span>
             <h2 style={{ fontSize: 'var(--fs-display-sm)', marginBottom: 24 }}>Tell us about the trip.</h2>
             <div style={{ display: 'grid', gap: 16 }}>

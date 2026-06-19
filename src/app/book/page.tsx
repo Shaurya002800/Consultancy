@@ -204,7 +204,7 @@ function BookingForm() {
 
   if (done) {
     return (
-      <div className="container" style={{ padding: '128px var(--gutter)', maxWidth: 760 }}>
+      <div className="container booking-success" style={{ padding: '128px var(--gutter)', maxWidth: 760 }}>
         <div className="form-panel" style={{ textAlign: 'center' }}>
           <span className="icon-tile" style={{ width: 64, height: 64, margin: '0 auto 22px', color: 'var(--success)' }}>
             <Check size={34} />
@@ -226,34 +226,36 @@ function BookingForm() {
   return (
     <>
       <ProgressIndicator step={step} />
-      <section className="section" style={{ paddingTop: 52 }}>
-        <div className="container split" style={{ alignItems: 'start' }}>
-          <aside className="card" style={{ position: 'sticky', top: 118 }}>
-            <span className="eyebrow">Booking desk</span>
-            <h1 style={{ fontSize: 'var(--fs-display-sm)', marginBottom: 14 }}>Reserve a private session.</h1>
-            <p style={{ color: 'var(--muted)', marginBottom: 24 }}>
-              Choose the service, select a slot, share details, and pay securely through Razorpay.
-            </p>
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div className="signal-row" style={{ color: 'var(--ink)', borderColor: 'rgba(29,36,48,0.1)' }}>
+      <section className="section booking-workspace">
+        <div className="container booking-layout">
+          <aside className="booking-intro-panel">
+            <div className="booking-intro-copy">
+              <span className="eyebrow">A quiet beginning</span>
+              <h1>Reserve time that is entirely yours.</h1>
+              <p>
+                Choose the support you need. Everything you share is held privately, and you can move through the booking at your own pace.
+              </p>
+            </div>
+            <div className="booking-assurances">
+              <div className="signal-row">
                 <Lock size={18} />
                 <span>Private details</span>
-                <strong>Safe</strong>
+                <strong>Confidential</strong>
               </div>
-              <div className="signal-row" style={{ color: 'var(--ink)', borderColor: 'rgba(29,36,48,0.1)' }}>
+              <div className="signal-row">
                 <Clock size={18} />
                 <span>Times shown</span>
                 <strong>IST</strong>
               </div>
-              <div className="signal-row" style={{ color: 'var(--ink)', borderColor: 'rgba(29,36,48,0.1)' }}>
+              <div className="signal-row">
                 <CreditCard size={18} />
-                <span>Payment</span>
+                <span>Secure payment</span>
                 <strong>Razorpay</strong>
               </div>
             </div>
           </aside>
 
-          <div className="form-panel">
+          <div className="form-panel booking-form-panel">
             {step === 1 && (
               <div style={{ display: 'grid', gap: 24 }}>
                 <div>
@@ -537,7 +539,7 @@ function BookingForm() {
 
 export default function BookPage() {
   return (
-    <div className="page-shell" style={{ paddingTop: 74 }}>
+    <div className="page-shell booking-page" style={{ paddingTop: 74 }}>
       <Suspense fallback={<p style={{ textAlign: 'center', padding: 80, color: 'var(--muted)' }}>Loading...</p>}>
         <BookingForm />
       </Suspense>

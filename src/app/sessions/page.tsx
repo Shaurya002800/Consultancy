@@ -3,7 +3,8 @@
 import { ArrowRight, Check, HelpCircle, MessageCircle, MoonStar, Sparkles, Timer } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
+import EditorialHero from '@/components/layout/EditorialHero'
+import RevealOnScroll from '@/components/ui/RevealOnScroll'
 
 const consultancyPlans = [
   { duration: 30, label: 'Quick Clarity', price: 800, features: ['One focused topic', 'Actionable guidance', 'WhatsApp follow-up summary'], popular: false },
@@ -36,53 +37,52 @@ export default function SessionsPage() {
   const plans = activeTab === 'consultancy' ? consultancyPlans : astrologyPlans
 
   return (
-    <div className="page-shell">
-      <section className="hero" style={{ minHeight: '74vh' }}>
-        <div className="hero-inner">
-          <div className="hero-copy">
-            <span className="eyebrow">Sessions & Pricing</span>
-            <h1>
-              Choose the depth of support that matches <em>today.</em>
-            </h1>
-            <p>
-              Transparent session options for personal guidance and astrology-backed clarity. Start small, go deeper, or build a pack for ongoing support.
-            </p>
-          </div>
-
-          <div className="visual-board">
-            <div className="board-content">
-              <div style={{ marginBottom: 16 }}>
-                <SerenovaBrandPanel />
-              </div>
-              <div className="signal-card">
-                <p style={{ color: 'var(--gold-light)', marginBottom: 16 }}>Session fit check</p>
-                {[
-                  ['Need to talk it through', 'Consultancy'],
-                  ['Need timing and patterns', 'Astrology'],
-                  ['Need support over weeks', 'Packages'],
-                ].map(([need, fit]) => (
-                  <div className="signal-row" key={need}>
-                    <HelpCircle size={18} />
-                    <span>{need}</span>
-                    <strong>{fit}</strong>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="page-shell editorial-page sessions-page">
+      <EditorialHero
+        variant="sessions"
+        eyebrow="Sessions & Pricing"
+        title={<>Choose the space your heart and mind need <em>today.</em></>}
+        copy="Begin with one focused conversation, take more time for a deeper story, or return over several weeks when life needs steadier support."
+        noteLabel="A gentle place to begin"
+        note="You do not need to arrive with a clear question. We can begin with what has been weighing on you."
+        actions={(
+          <>
+            <Link href="/book?type=consultancy" className="btn btn-primary">
+              Book a Conversation
+              <ArrowRight size={17} />
+            </Link>
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, I would like to know which Serenova session is right for me.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              <MessageCircle size={18} />
+              Ask First
+            </a>
+          </>
+        )}
+      />
 
       <section className="section">
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24, alignItems: 'end', flexWrap: 'wrap', marginBottom: 36 }}>
-            <div className="section-heading" style={{ marginBottom: 0 }}>
-              <span className="eyebrow">Bookable sessions</span>
-              <h2>Two service lines, multiple levels of depth.</h2>
+          <RevealOnScroll>
+            <div className="session-picker-head">
+              <div className="section-heading" style={{ marginBottom: 0 }}>
+                <span className="eyebrow">Choose your conversation</span>
+                <h2>Different days ask for different kinds of support.</h2>
+                <p>All sessions are private and available in Hindi or English.</p>
+              </div>
+              <div className="session-fit-note">
+                <HelpCircle size={19} />
+                <span>Not sure? Start with Personal Guidance or ask on WhatsApp.</span>
+              </div>
             </div>
+          </RevealOnScroll>
+          <div className="session-tabs-row">
             <div className="tabs" role="tablist" aria-label="Session type">
               <button className={`tab ${activeTab === 'consultancy' ? 'active' : ''}`} onClick={() => setActiveTab('consultancy')}>
-                Personal Consultancy
+                Personal Guidance
               </button>
               <button className={`tab ${activeTab === 'astrology' ? 'active' : ''}`} onClick={() => setActiveTab('astrology')}>
                 Astrology + Guidance
@@ -175,7 +175,7 @@ export default function SessionsPage() {
             </a>
           </div>
 
-          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div className="card editorial-faq">
             {faqs.map(([q, a], index) => (
               <div key={q} style={{ borderBottom: index < faqs.length - 1 ? '1px solid rgba(29,36,48,0.1)' : 0 }}>
                 <button

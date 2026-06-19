@@ -13,233 +13,269 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
+import RevealOnScroll from '@/components/ui/RevealOnScroll'
 
 const pathways = [
   {
     key: 'clarity',
-    label: 'I need clarity',
-    title: 'Personal Consultancy',
-    copy: 'Private one-on-one guidance for relationships, career crossroads, grief, family pressure, and life transitions.',
+    prompt: 'I need someone to talk to',
+    title: 'Personal Guidance',
+    copy: 'A private one-to-one conversation for the thoughts, feelings, relationships, grief, pressure, or life changes that have become difficult to carry alone.',
     price: 'From Rs. 800',
-    href: '/sessions',
+    href: '/book?type=consultancy',
     icon: HeartHandshake,
   },
   {
     key: 'timing',
-    label: 'I need timing',
+    prompt: 'I am looking for deeper insight',
     title: 'Astrology + Guidance',
-    copy: 'A birth-chart reading paired with practical counsel, so the insight becomes a decision you can actually act on.',
+    copy: 'A thoughtful birth-chart reading paired with grounded conversation, helping you understand patterns and approach your next decision with greater clarity.',
     price: 'From Rs. 1,800',
-    href: '/sessions',
+    href: '/book?type=astrology',
     icon: MoonStar,
   },
   {
     key: 'travel',
-    label: 'My child needs support',
+    prompt: 'My child needs a trusted companion',
     title: 'Companion Travel',
-    copy: 'A trusted adult companion for children and young travellers, with planning, safety check-ins, and family communication.',
+    copy: 'Calm, responsible travel support for children and young travellers, with thoughtful planning, regular family communication, and care throughout the journey.',
     price: 'Custom quote',
     href: '/travel',
     icon: Map,
   },
 ]
 
-const proof = [
-  { value: '200+', label: 'private sessions completed' },
-  { value: '8+', label: 'years of guidance practice' },
-  { value: '3', label: 'ways to work with Serenova' },
+const moments = [
+  ['When no one seems to understand', 'You can speak without having to explain why your feelings matter.'],
+  ['When your thoughts feel too heavy', 'We slow the noise down and look at one thing at a time.'],
+  ['When joy or grief needs a witness', 'Not every conversation has to begin with a problem.'],
+  ['When the way forward feels unclear', 'A steady conversation can help the next step come into view.'],
+]
+
+const guidanceSteps = [
+  {
+    number: '01',
+    title: 'Speak freely',
+    copy: 'Come as you are. There is no perfect way to tell your story and no need to have the right words ready.',
+    icon: MessageCircle,
+  },
+  {
+    number: '02',
+    title: 'Feel understood',
+    copy: 'Your situation is heard with patience, empathy, and thoughtful, psychology-informed reflection.',
+    icon: HeartHandshake,
+  },
+  {
+    number: '03',
+    title: 'Find a steadier next step',
+    copy: 'Together, we make the situation clearer and identify a practical, gentler way forward.',
+    icon: Sparkles,
+  },
 ]
 
 export default function Home() {
   const [active, setActive] = useState(pathways[0])
   const ActiveIcon = active.icon
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
+  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hi, I would like to talk, but I am not sure which session is right for me.')}`
 
   return (
-    <div className="page-shell">
-      <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-copy">
-            <span className="eyebrow">Serenova Guidance Studio</span>
-            <h1>
-              A calmer way to make your <em>next decision.</em>
-            </h1>
-            <p>
-              Book private guidance, astrology-backed counsel, or family travel support from one trusted place. The experience is personal, practical, and built around what you are actually trying to solve.
+    <div className="page-shell home-page">
+      <section className="home-hero">
+        <div className="home-hero-inner">
+          <div className="home-hero-copy">
+            <span className="eyebrow">Private, one-to-one guidance</span>
+            <h1>A private space to be <em>heard.</em></h1>
+            <p className="home-hero-lead">
+              Whatever you are carrying, you do not have to carry it alone.
             </p>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 34 }}>
-              <Link href="/book" className="btn btn-primary">
-                <Calendar size={18} />
-                Book a Session
+            <p className="home-hero-support">
+              Come with your sorrow or your joy, your confusion, loneliness, or the thoughts you have not been able to share. Sometimes, being truly heard is where calm begins.
+            </p>
+            <div className="home-hero-actions">
+              <Link href="/book?type=consultancy" className="btn btn-primary">
+                <MessageCircle size={18} />
+                Book a Private Conversation
               </Link>
-              <Link href="/travel" className="btn btn-ghost">
-                <Compass size={18} />
-                Plan Companion Travel
-              </Link>
+              <a href="#how-it-works" className="btn btn-ghost">
+                How It Works
+                <ArrowRight size={17} />
+              </a>
+            </div>
+            <div className="home-trust-line" aria-label="Service assurances">
+              <span><ShieldCheck size={16} /> Confidential</span>
+              <span><HeartHandshake size={16} /> Without judgment</span>
+              <span><Compass size={16} /> At your pace</span>
             </div>
           </div>
 
-          <div className="visual-board" aria-label="Serenova service pathways">
-            <div className="board-content">
-              <div style={{ marginBottom: 16 }}>
-                <SerenovaBrandPanel />
-              </div>
-              <div className="signal-card" style={{ marginBottom: 16 }}>
-                <p style={{ color: 'rgba(255,250,242,0.62)', fontSize: 12, marginBottom: 10 }}>Live guidance map</p>
-                <div className="signal-row">
-                  <ShieldCheck size={19} />
-                  <span>Private intake</span>
-                  <span>01</span>
-                </div>
-                <div className="signal-row">
-                  <MessageCircle size={19} />
-                  <span>Focused conversation</span>
-                  <span>02</span>
-                </div>
-                <div className="signal-row">
-                  <Sparkles size={19} />
-                  <span>Clear next step</span>
-                  <span>03</span>
-                </div>
-              </div>
-              <div className="pulse-line" />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
-                <div className="signal-card">
-                  <strong style={{ display: 'block', fontSize: 24 }}>24h</strong>
-                  <span style={{ color: 'rgba(255,250,242,0.64)', fontSize: 12 }}>booking response</span>
-                </div>
-                <div className="signal-card">
-                  <strong style={{ display: 'block', fontSize: 24 }}>100%</strong>
-                  <span style={{ color: 'rgba(255,250,242,0.64)', fontSize: 12 }}>confidential</span>
-                </div>
-              </div>
-            </div>
+          <aside className="home-welcome-note">
+            <span className="home-note-mark">“</span>
+            <p>
+              If your heart has been waiting for a place to speak, you are welcome here.
+            </p>
+            <span>Serenova Guidance Studio</span>
+          </aside>
+        </div>
+      </section>
+
+      <section className="home-assurance-band">
+        <div className="container home-assurance-grid">
+          <div>
+            <span className="eyebrow">You may come as you are</span>
+            <h2>Some things become lighter when they are spoken.</h2>
+          </div>
+          <div className="home-letter">
+            <p>
+              If you feel that no one understands, if you want to speak what is in your heart, or if the days have begun to feel too heavy, you are welcome to talk.
+            </p>
+            <p>
+              There is nothing wrong in asking to be heard. A kind conversation can quiet the mind, help us see more clearly, and remind us that another way forward is possible.
+            </p>
+            <p className="home-letter-signoff">
+              I will listen with empathy, help you understand what you are feeling, and walk beside you toward a steadier path, like a trusted friend.
+            </p>
           </div>
         </div>
       </section>
 
-      <section className="section-tight">
+      <section className="section home-moments-section">
         <div className="container">
-          <div className="metric-strip">
-            {proof.map((item) => (
-              <div className="metric" key={item.label}>
-                <strong>{item.value}</strong>
-                <span>{item.label}</span>
-              </div>
+          <RevealOnScroll>
+            <div className="section-heading">
+              <span className="eyebrow">A conversation can begin anywhere</span>
+              <h2>You do not need a crisis to need support.</h2>
+              <p>
+                You can talk when life hurts, when something beautiful has happened, or simply when your mind needs room to breathe.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="home-moments-grid">
+            {moments.map(([title, copy], index) => (
+              <RevealOnScroll key={title}>
+                <article className="home-moment">
+                  <span>0{index + 1}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{copy}</p>
+                  </div>
+                </article>
+              </RevealOnScroll>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="container split">
-          <div>
-            <span className="eyebrow">Choose your starting point</span>
-            <h2 style={{ fontSize: 'var(--fs-display-md)', fontWeight: 500, marginBottom: 18 }}>
-              The business is simple: people come with uncertainty, Serenova helps them leave with direction.
-            </h2>
-            <p style={{ color: 'var(--muted)', fontSize: 'var(--fs-body-lg)' }}>
-              Some decisions need a listening ear. Some need astrology and timing. Some need a responsible adult your family can trust. Pick the path that fits today.
-            </p>
-          </div>
+      <section className="section dark-band home-process-section" id="how-it-works">
+        <div className="container">
+          <RevealOnScroll>
+            <div className="section-heading">
+              <span className="eyebrow">How a session feels</span>
+              <h2>Not a lecture. Not a judgment. A real conversation.</h2>
+              <p>
+                The aim is simple: to help you feel less alone in the moment and more certain about what comes next.
+              </p>
+            </div>
+          </RevealOnScroll>
 
-          <div className="journey-panel" style={{ padding: 10 }}>
-            {pathways.map((item) => {
+          <div className="home-process-grid">
+            {guidanceSteps.map((item) => {
               const Icon = item.icon
-              const selected = active.key === item.key
               return (
-                <button
-                  key={item.key}
-                  className={`option-card ${selected ? 'active' : ''}`}
-                  onClick={() => setActive(item)}
-                  style={{ marginBottom: 10 }}
-                >
-                  <span className="icon-tile">
-                    <Icon size={20} />
-                  </span>
-                  <span style={{ flex: 1 }}>
-                    <strong style={{ display: 'block', color: 'var(--ink)' }}>{item.label}</strong>
-                    <span style={{ color: 'var(--muted)', fontSize: 13 }}>{item.title}</span>
-                  </span>
-                  <ArrowRight size={18} />
-                </button>
+                <RevealOnScroll key={item.number}>
+                  <article className="home-process-step">
+                    <div className="home-process-head">
+                      <span>{item.number}</span>
+                      <Icon size={22} />
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p>{item.copy}</p>
+                  </article>
+                </RevealOnScroll>
               )
             })}
           </div>
         </div>
-
-        <div className="container" style={{ marginTop: 34 }}>
-          <div className="service-card" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 22, alignItems: 'center' }}>
-            <span className="icon-tile">
-              <ActiveIcon size={22} />
-            </span>
-            <div>
-              <span className="eyebrow" style={{ marginBottom: 8 }}>{active.price}</span>
-              <h3 style={{ margin: 0 }}>{active.title}</h3>
-              <p style={{ marginTop: 8 }}>{active.copy}</p>
-            </div>
-            <Link href={active.href} className="btn btn-primary">
-              Explore
-              <ArrowRight size={17} />
-            </Link>
-          </div>
-        </div>
       </section>
 
-      <section className="section dark-band">
+      <section className="section home-pathways-section">
         <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">What changes here</span>
-            <h2>From scattered thoughts to a practical next step.</h2>
-            <p>
-              Every offer is structured around one outcome: you should finish with more clarity than you arrived with.
-            </p>
-          </div>
-
-          <div className="grid-3">
-            {[
-              ['Listen', 'A private space where the full situation can come out without performance or judgment.'],
-              ['Decode', 'Patterns, timing, emotional context, and practical constraints are brought into one frame.'],
-              ['Act', 'You leave with a next step: a conversation to have, a boundary to hold, a trip plan, or a decision window.'],
-            ].map(([title, copy], index) => (
-              <div className="signal-card" key={title}>
-                <p style={{ color: 'var(--gold-light)', fontFamily: 'var(--font-mono)', marginBottom: 18 }}>0{index + 1}</p>
-                <h3 style={{ fontSize: 30, marginBottom: 10 }}>{title}</h3>
-                <p>{copy}</p>
+          <RevealOnScroll>
+            <div className="home-pathways-heading">
+              <div>
+                <span className="eyebrow">Choose what you need today</span>
+                <h2>Begin with the kind of support that feels right.</h2>
               </div>
-            ))}
+              <p>
+                You do not have to know the perfect service before reaching out. Start with the closest feeling.
+              </p>
+            </div>
+          </RevealOnScroll>
+
+          <div className="home-pathways-layout">
+            <div className="home-pathway-tabs" role="tablist" aria-label="Serenova services">
+              {pathways.map((item) => {
+                const Icon = item.icon
+                const selected = active.key === item.key
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    className={`home-pathway-tab ${selected ? 'active' : ''}`}
+                    onClick={() => setActive(item)}
+                  >
+                    <Icon size={20} />
+                    <span>
+                      <strong>{item.prompt}</strong>
+                      <small>{item.title}</small>
+                    </span>
+                    <ArrowRight size={18} />
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className="home-pathway-detail" role="tabpanel">
+              <div className="home-pathway-icon">
+                <ActiveIcon size={28} />
+              </div>
+              <span className="eyebrow">{active.price}</span>
+              <h3>{active.title}</h3>
+              <p>{active.copy}</p>
+              <Link href={active.href} className="btn btn-primary">
+                {active.key === 'travel' ? 'Explore Travel Support' : 'Book This Session'}
+                <ArrowRight size={17} />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="container split">
-          <div className="section-heading" style={{ marginBottom: 0 }}>
-            <span className="eyebrow">Ready when you are</span>
-            <h2>Book directly, compare sessions, or ask a question first.</h2>
-            <p>
-              No funnel pressure. Choose the route that gives you enough confidence to begin.
-            </p>
+      <section className="section-tight home-final-section">
+        <div className="container home-final-inner">
+          <div>
+            <span className="eyebrow">When you are ready</span>
+            <h2>Your first step can simply be: “I need to talk.”</h2>
+            <p>Book directly, or send a WhatsApp message first if you are unsure where to begin.</p>
           </div>
-          <div className="card" style={{ display: 'grid', gap: 14 }}>
-            <Link href="/book" className="btn btn-primary">
+          <div className="home-final-actions">
+            <Link href="/book?type=consultancy" className="btn btn-primary">
               <Calendar size={18} />
               Book a Session
             </Link>
-            <Link href="/sessions" className="btn btn-secondary">
-              Compare Sessions
-              <ArrowRight size={17} />
-            </Link>
-            <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi, I am not sure which Serenova service is right for me.")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-secondary"
-            >
+            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
               <MessageCircle size={18} />
               Ask on WhatsApp
             </a>
           </div>
+        </div>
+        <div className="container">
+          <p className="home-care-note">
+            Serenova offers supportive, non-clinical guidance. It is not therapy, diagnosis, or emergency mental-health care. If you may harm yourself or are in immediate danger, contact local emergency services or a qualified crisis service now.
+          </p>
         </div>
       </section>
     </div>

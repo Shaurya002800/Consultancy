@@ -1,6 +1,7 @@
 import { ArrowRight, BookOpen, Heart, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { SerenovaBrandPanel } from '@/components/brand/SerenovaBrand'
+import EditorialHero from '@/components/layout/EditorialHero'
+import RevealOnScroll from '@/components/ui/RevealOnScroll'
 
 const values = [
   ['Private by default', 'No recordings, no public case studies without consent, no performance.'],
@@ -17,41 +18,32 @@ const stories = [
 
 export default function AboutPage() {
   return (
-    <div className="page-shell">
-      <section className="hero" style={{ minHeight: '78vh' }}>
-        <div className="hero-inner">
-          <div className="hero-copy">
-            <span className="eyebrow">About Serenova</span>
-            <h1>
-              Guidance with intuition, structure, and <em>lived care.</em>
-            </h1>
-            <p>
-              Serenova brings personal consultancy, astrology, and family travel support into one trust-led studio. The work is calm, direct, and centered on helping people feel less alone with decisions that matter.
-            </p>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 34 }}>
-              <Link href="/sessions" className="btn btn-primary">
-                View Sessions
-                <ArrowRight size={17} />
-              </Link>
-              <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-ghost"
-              >
-                <MessageCircle size={18} />
-                Start with a question
-              </a>
-            </div>
-          </div>
-
-          <div className="visual-board">
-            <div className="board-content">
-              <SerenovaBrandPanel />
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="page-shell editorial-page about-page">
+      <EditorialHero
+        variant="about"
+        eyebrow="About Serenova"
+        title={<>A thoughtful listener. A steady voice. <em>A friend to your next step.</em></>}
+        copy="Serenova is a private guidance studio built around patient listening, warm honesty, and practical support for the quiet moments people often carry alone."
+        noteLabel="Why Serenova exists"
+        note="Not to decide your life for you, but to help you hear yourself more clearly and feel steadier in what comes next."
+        actions={(
+          <>
+            <Link href="/sessions" className="btn btn-primary">
+              View Sessions
+              <ArrowRight size={17} />
+            </Link>
+            <a
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              <MessageCircle size={18} />
+              Start with a Question
+            </a>
+          </>
+        )}
+      />
 
       <section className="section-tight">
         <div className="container">
@@ -72,16 +64,18 @@ export default function AboutPage() {
 
       <section className="section">
         <div className="container split">
-          <div>
-            <span className="eyebrow">The approach</span>
-            <h2 style={{ fontSize: 'var(--fs-display-md)', fontWeight: 500, marginBottom: 22 }}>
-              Serenova is built for the quiet, complicated moments people usually carry alone.
-            </h2>
-            <p style={{ color: 'var(--muted)', fontSize: 'var(--fs-body-lg)' }}>
-              The method is not rigid. A session can be emotional, strategic, astrological, practical, or all of those at once. What stays consistent is the quality of attention: listen deeply, name the pattern, and help the client choose the next right move.
-            </p>
-          </div>
-          <div className="card">
+          <RevealOnScroll>
+            <div>
+              <span className="eyebrow">The approach</span>
+              <h2 style={{ fontSize: 'var(--fs-display-md)', fontWeight: 500, marginBottom: 22 }}>
+                Built for the quiet, complicated moments people usually carry alone.
+              </h2>
+              <p style={{ color: 'var(--muted)', fontSize: 'var(--fs-body-lg)' }}>
+                A session can be emotional, strategic, astrological, practical, or a natural mixture of them. What stays consistent is the quality of attention: listen deeply, understand the pattern, and help the next right move become clearer.
+              </p>
+            </div>
+          </RevealOnScroll>
+          <div className="about-quote-panel">
             <blockquote style={{ borderLeft: '4px solid var(--clay)', paddingLeft: 22 }}>
               <p style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--teal-dark)', lineHeight: 1.25 }}>
                 The goal is not to tell someone what to do. The goal is to help them hear themselves clearly.
@@ -96,7 +90,7 @@ export default function AboutPage() {
           <div className="section-heading">
             <span className="eyebrow">Working values</span>
             <h2>Trust is the product.</h2>
-            <p>The UI now reflects the actual business: private service, clear options, and thoughtful guidance.</p>
+            <p>Every part of the experience is designed to feel private, clear, respectful, and human.</p>
           </div>
           <div className="grid-4">
             {values.map(([title, copy], index) => {
