@@ -25,6 +25,12 @@ const SESSION_OPTIONS = {
 
 const STEPS = ['Session', 'Time', 'Details', 'Payment']
 
+type RazorpaySuccessResponse = {
+  razorpay_order_id: string
+  razorpay_payment_id: string
+  razorpay_signature: string
+}
+
 function ProgressIndicator({ step }: { step: number }) {
   return (
     <nav className="progress-shell" aria-label="Booking progress">
@@ -139,7 +145,6 @@ function BookingForm() {
           phone: details.phone,
           session_type: sessionType,
           duration: selectedOption?.duration,
-          price: selectedOption?.price,
           date: selectedDate,
           time: selectedTime,
           dob: details.dob,
@@ -175,12 +180,15 @@ function BookingForm() {
       const res = await fetch('/api/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId, amount: selectedOption?.price }),
+        body: JSON.stringify({ bookingId }),
       })
-      const { orderId } = await res.json()
+      const paymentData = await res.json()
+      if (!res.ok) throw new Error(paymentData.error || 'Could not start payment.')
+
+      const { orderId, amount } = paymentData
       const rzp = new (window as unknown as { Razorpay: new (opts: unknown) => { open: () => void } }).Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: (selectedOption?.price || 0) * 100,
+        amount,
         currency: 'INR',
         order_id: orderId,
         name: 'Serenova',
@@ -192,11 +200,41 @@ function BookingForm() {
         modal: {
           ondismiss: () => setSubmitting(false),
         },
-        handler: () => setDone(true),
+        handler: async (response: RazorpaySuccessResponse) => {
+          setSubmitting(true)
+          setError('')
+
+          try {
+            const verifyResponse = await fetch('/api/payment/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ bookingId, ...response }),
+            })
+            const verification = await verifyResponse.json()
+
+            if (!verifyResponse.ok || !verification.confirmed) {
+              throw new Error(verification.error || 'Payment verification failed.')
+            }
+
+            setDone(true)
+          } catch (verificationError) {
+            setError(
+              verificationError instanceof Error
+                ? `${verificationError.message} If money was deducted, please contact us with your payment ID.`
+                : 'Payment verification failed. Please contact us if money was deducted.'
+            )
+          } finally {
+            setSubmitting(false)
+          }
+        },
       })
       rzp.open()
-    } catch {
-      setError("Payment couldn't be completed. Nothing was charged. Please try again or reach out on WhatsApp.")
+    } catch (paymentError) {
+      setError(
+        paymentError instanceof Error
+          ? paymentError.message
+          : "Payment couldn't be started. Nothing was charged."
+      )
     } finally {
       setSubmitting(false)
     }
