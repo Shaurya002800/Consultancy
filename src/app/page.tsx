@@ -36,9 +36,9 @@ const pathways = [
   },
   {
     key: 'travel',
-    prompt: 'My child needs a trusted companion',
+    prompt: 'I need a trusted travel companion',
     title: 'Companion Travel',
-    copy: 'Calm, responsible travel support for children and young travellers, with thoughtful planning, regular family communication, and care throughout the journey.',
+    copy: 'Calm, responsible travel support for people of any age, with thoughtful planning, practical assistance, regular updates, and care throughout the journey.',
     price: 'Custom quote',
     href: '/travel',
     icon: Map,

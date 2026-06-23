@@ -6,26 +6,26 @@ import EditorialHero from '@/components/layout/EditorialHero'
 import RevealOnScroll from '@/components/ui/RevealOnScroll'
 
 const included = [
-  ['Pre-trip planning', 'Itinerary, stay, activities, emergency contacts, and expectations agreed with the family.'],
+  ['Pre-trip planning', 'Itinerary, stay, activities, emergency contacts, accessibility, and expectations agreed before departure.'],
   ['Regular check-ins', 'WhatsApp updates throughout the trip: photos, status, location, and quick notes.'],
-  ['Safety-first supervision', 'A trusted adult presence with backup plans and calm handling when plans change.'],
-  ['Child-paced travel', 'The trip moves around the child, not a rushed adult schedule.'],
+  ['Safety-first support', 'A trusted companion presence with backup plans and calm handling when plans change.'],
+  ['Traveller-paced journeys', 'The trip moves around the traveller’s comfort, energy, mobility, and interests.'],
 ]
 
 const travelSteps = [
-  ['Inquiry', 'Share child age, destination, dates, and what kind of support you need.'],
-  ['Discovery call', 'A free call to understand the family, child personality, safety needs, and budget.'],
-  ['Trip plan', 'You approve itinerary, travel mode, accommodation, check-in rhythm, and boundaries.'],
-  ['Travel support', 'She travels with your child and keeps the family updated along the way.'],
-  ['Safe return', 'A closing update after the trip with notes, highlights, and anything parents should know.'],
+  ['Inquiry', 'Share the traveller’s age group, destination, dates, and the kind of companionship required.'],
+  ['Discovery call', 'A free call to understand the traveller, comfort needs, safety considerations, and budget.'],
+  ['Trip plan', 'Agree on itinerary, travel mode, accommodation, check-in rhythm, assistance, and boundaries.'],
+  ['Travel support', 'She travels alongside the traveller and keeps the chosen contacts updated along the way.'],
+  ['Safe return', 'A closing update after the trip with notes, highlights, and anything the family should know.'],
 ]
 
 export default function TravelPage() {
-  const [form, setForm] = useState({ name: '', phone: '', age: '', destination: '', dates: '', message: '' })
+  const [form, setForm] = useState({ name: '', phone: '', traveller: '', destination: '', dates: '', message: '' })
 
   const sendInquiry = () => {
     const params = new URLSearchParams({
-      text: `Hi! Companion Travel enquiry.\n\nParent: ${form.name}\nPhone: ${form.phone}\nChild age: ${form.age}\nDestination: ${form.destination}\nDates: ${form.dates}\nDetails: ${form.message}`,
+      text: `Hi! Companion Travel enquiry.\n\nContact name: ${form.name}\nPhone: ${form.phone}\nTraveller age/group: ${form.traveller}\nDestination: ${form.destination}\nDates: ${form.dates}\nDetails: ${form.message}`,
     })
     window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?${params}`, '_blank')
   }
@@ -35,10 +35,10 @@ export default function TravelPage() {
       <EditorialHero
         variant="travel"
         eyebrow="Companion Travel"
-        title={<>Let them discover the world. <em>Stay close to every step.</em></>}
-        copy="Thoughtful travel companionship for children and young travellers, with the planning, safety, and family communication that make independence feel possible."
+        title={<>Travel with freedom. <em>Never without support.</em></>}
+        copy="Thoughtful travel companionship for people of any age, with the planning, safety, assistance, and communication that make a journey feel possible."
         noteLabel="The promise"
-        note="Your child should feel free, never unattended. You should feel informed, never left wondering."
+        note="The traveller feels independent, respected, and supported. Their chosen people stay informed, never left wondering."
         actions={(
           <>
             <a href="#inquire" className="btn btn-primary">
@@ -63,8 +63,8 @@ export default function TravelPage() {
           <RevealOnScroll>
             <div className="section-heading">
               <span className="eyebrow">What is included</span>
-              <h2>More than a chaperone. A calm adult system around the trip.</h2>
-              <p>Companion travel works when parents know the plan and children feel supported without feeling controlled.</p>
+              <h2>More than company. A calm support system around the journey.</h2>
+              <p>Companion travel works when the plan is clear and the traveller feels supported without feeling controlled.</p>
             </div>
           </RevealOnScroll>
 
@@ -90,18 +90,18 @@ export default function TravelPage() {
         <div className="container split">
           <div className="section-heading" style={{ marginBottom: 0 }}>
             <span className="eyebrow">Best fit</span>
-            <h2>For parents who want to say yes, but need the right support.</h2>
+            <h2>For anyone who wants to travel, but needs the right person beside them.</h2>
             <p>
-              Useful for busy parents, single-parent families, solo young travellers, school trips, heritage tours, camps, and first independent travel experiences.
+              Useful for children, first-time solo travellers, senior citizens, people who need mobility or language support, and families who cannot accompany a loved one.
             </p>
           </div>
           <div className="card">
             <ul className="list-clean">
               {[
-                'Child is ready to explore but needs adult supervision.',
-                'Parents cannot travel because of work or family responsibilities.',
+                'A young traveller is ready to explore but still needs responsible supervision.',
+                'A senior or adult traveller would feel safer with practical assistance and company.',
                 'The destination needs planning, local navigation, and steady check-ins.',
-                'The family wants independence without losing safety visibility.',
+                'Family or friends cannot travel, but want reliable updates and peace of mind.',
               ].map((item) => (
                 <li key={item}>
                   <CheckCircle2 size={18} color="var(--clay)" />
@@ -159,8 +159,8 @@ export default function TravelPage() {
               </div>
               <div className="grid-2">
                 <div className="field">
-                  <label>Child&apos;s age *</label>
-                  <input className="input" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} placeholder="10 years" />
+                  <label>Traveller age / group *</label>
+                  <input className="input" value={form.traveller} onChange={(e) => setForm({ ...form, traveller: e.target.value })} placeholder="Senior, adult, or 10 years" />
                 </div>
                 <div className="field">
                   <label>Destination *</label>
@@ -173,7 +173,7 @@ export default function TravelPage() {
               </div>
               <div className="field">
                 <label>Anything else we should know</label>
-                <textarea className="textarea" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Number of children, special needs, budget, questions..." />
+                <textarea className="textarea" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Number of travellers, mobility or health needs, language support, budget, questions..." />
               </div>
               <button onClick={sendInquiry} className="btn btn-whatsapp" style={{ width: '100%' }}>
                 <MessageCircle size={18} />

@@ -23,7 +23,7 @@ export default function Footer() {
               <SerenovaLockup />
             </div>
             <p style={{ maxWidth: 320 }}>
-              A private guidance studio for clarity sessions, astrology-backed counsel, and trusted companion travel for families.
+              A private guidance studio for clarity sessions, astrology-backed counsel, and trusted companion travel for people of every age.
             </p>
           </div>
 

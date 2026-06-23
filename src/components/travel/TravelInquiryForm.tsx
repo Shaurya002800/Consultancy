@@ -31,7 +31,7 @@ export default function TravelInquiryForm() {
         const form = e.target as HTMLFormElement
         const data = new FormData(form)
         const params = new URLSearchParams({
-          text: `Hi! I'd like to inquire about Companion Travel.\n\nParent name: ${data.get('name')}\nPhone: ${data.get('phone')}\nChild age: ${data.get('age')}\nDestination: ${data.get('destination')}\nDates: ${data.get('dates')}\nDetails: ${data.get('message')}`,
+          text: `Hi! I'd like to inquire about Companion Travel.\n\nContact name: ${data.get('name')}\nPhone: ${data.get('phone')}\nTraveller age/group: ${data.get('traveller')}\nDestination: ${data.get('destination')}\nDates: ${data.get('dates')}\nDetails: ${data.get('message')}`,
         })
         window.open(`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER}?${params}`, '_blank')
       }}
@@ -50,8 +50,8 @@ export default function TravelInquiryForm() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         <div>
-          <label style={labelStyle}>Child&apos;s age</label>
-          <input name="age" required placeholder="e.g. 10 years" style={inputStyle} />
+          <label style={labelStyle}>Traveller age / group</label>
+          <input name="traveller" required placeholder="e.g. senior, adult, or 10 years" style={inputStyle} />
         </div>
         <div>
           <label style={labelStyle}>Destination</label>
@@ -69,7 +69,7 @@ export default function TravelInquiryForm() {
         <textarea
           name="message"
           rows={4}
-          placeholder="Number of children, special needs, budget, questions..."
+          placeholder="Number of travellers, mobility or health needs, language support, budget, questions..."
           style={{ ...inputStyle, resize: 'vertical' }}
         />
       </div>
