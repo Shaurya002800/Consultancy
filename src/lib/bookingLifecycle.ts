@@ -20,6 +20,10 @@ export async function removeExpiredPendingBookings(supabase: SupabaseClient, dat
   if (error) throw new Error(`Could not clear expired booking holds: ${error.message}`)
 }
 
+function notificationErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unknown booking notification error'
+}
+
 export async function notifyPaidBooking(
   supabase: SupabaseClient,
   booking: Parameters<typeof sendPrivateBookingAlert>[1]
@@ -28,8 +32,26 @@ export async function notifyPaidBooking(
     return { booking, notification: { sent: false, reason: 'not_paid' as const } }
   }
 
-  const notification = await sendPrivateBookingAlert(supabase, booking)
-  return { booking, notification }
+  try {
+    const notification = await sendPrivateBookingAlert(supabase, booking)
+    return { booking, notification }
+  } catch (error) {
+    const message = notificationErrorMessage(error)
+    console.error('Booking notification failed:', {
+      bookingId: booking.id,
+      paymentStatus: booking.payment_status,
+      error: message,
+    })
+
+    return {
+      booking,
+      notification: {
+        sent: false,
+        reason: 'send_failed' as const,
+        error: message,
+      },
+    }
+  }
 }
 
 export async function markBookingPaidAndNotify(
@@ -51,6 +73,5 @@ export async function markBookingPaidAndNotify(
     throw new Error(error?.message || 'Could not confirm the booking.')
   }
 
-  const notification = await sendPrivateBookingAlert(supabase, booking)
-  return { booking, notification }
+  return notifyPaidBooking(supabase, booking)
 }
