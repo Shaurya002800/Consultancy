@@ -102,9 +102,16 @@ function getEmailAlertConfig(booking: BookingAlert) {
     return null
   }
 
+  const to = process.env.BOOKING_ALERT_EMAIL_TO
+    .split(',')
+    .map((email) => email.trim())
+    .filter(Boolean)
+
+  if (!to.length) return null
+
   return {
     apiKey: process.env.RESEND_API_KEY,
-    to: process.env.BOOKING_ALERT_EMAIL_TO.split(',').map((email) => email.trim()).filter(Boolean),
+    to,
     from: process.env.BOOKING_ALERT_EMAIL_FROM,
     replyTo: process.env.BOOKING_ALERT_EMAIL_REPLY_TO || booking.email,
   }

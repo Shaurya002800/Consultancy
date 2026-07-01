@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { markBookingPaidAndNotify } from '@/lib/bookingLifecycle'
+import { markBookingPaidAndNotify, notifyPaidBooking } from '@/lib/bookingLifecycle'
 import { verifyWebhookSignature } from '@/lib/razorpayVerification'
 
 const supabase = createClient(
@@ -36,7 +36,12 @@ export async function POST(req: Request) {
       .eq('razorpay_order_id', orderId)
       .single()
 
-    if (!booking || booking.payment_status === 'paid') {
+    if (!booking) {
+      return NextResponse.json({ received: true })
+    }
+
+    if (booking.payment_status === 'paid') {
+      await notifyPaidBooking(supabase, booking)
       return NextResponse.json({ received: true })
     }
 

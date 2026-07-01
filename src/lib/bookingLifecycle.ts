@@ -20,6 +20,18 @@ export async function removeExpiredPendingBookings(supabase: SupabaseClient, dat
   if (error) throw new Error(`Could not clear expired booking holds: ${error.message}`)
 }
 
+export async function notifyPaidBooking(
+  supabase: SupabaseClient,
+  booking: Parameters<typeof sendPrivateBookingAlert>[1]
+) {
+  if (booking.payment_status !== 'paid') {
+    return { booking, notification: { sent: false, reason: 'not_paid' as const } }
+  }
+
+  const notification = await sendPrivateBookingAlert(supabase, booking)
+  return { booking, notification }
+}
+
 export async function markBookingPaidAndNotify(
   supabase: SupabaseClient,
   bookingId: string,

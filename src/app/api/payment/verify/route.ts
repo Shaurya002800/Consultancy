@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import Razorpay from 'razorpay'
 import { createClient } from '@supabase/supabase-js'
-import { markBookingPaidAndNotify } from '@/lib/bookingLifecycle'
+import { markBookingPaidAndNotify, notifyPaidBooking } from '@/lib/bookingLifecycle'
 import { verifyCheckoutSignature } from '@/lib/razorpayVerification'
 
 const razorpay = new Razorpay({
@@ -42,7 +42,11 @@ export async function POST(req: Request) {
     }
 
     if (booking.payment_status === 'paid') {
-      return NextResponse.json({ confirmed: true })
+      const result = await notifyPaidBooking(supabase, booking)
+      return NextResponse.json({
+        confirmed: true,
+        notificationSent: result.notification.sent,
+      })
     }
 
     if (!verifyCheckoutSignature(orderId, paymentId, signature)) {
