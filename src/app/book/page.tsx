@@ -250,7 +250,7 @@ function BookingForm() {
           <span className="eyebrow">Booking confirmed</span>
           <h1 style={{ fontSize: 'var(--fs-display-sm)', marginBottom: 14 }}>Your session is reserved.</h1>
           <p style={{ color: 'var(--muted)', marginBottom: 26 }}>
-            You will receive a WhatsApp message shortly with session details.
+            Your booking details have been recorded, and the team will reach out shortly.
           </p>
           <div className="card" style={{ boxShadow: 'none', marginBottom: 24 }}>
             {selectedDate} at {selectedTime} IST - {sessionType === 'consultancy' ? 'Personal Consultancy' : 'Astrology + Guidance'} ({selectedOption?.label})

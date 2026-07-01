@@ -92,7 +92,7 @@ export default function TravelPage() {
             <span className="eyebrow">Best fit</span>
             <h2>For anyone who wants to travel, but needs the right person beside them.</h2>
             <p>
-              Useful for children, first-time solo travellers, senior citizens, people who need mobility or language support, and families who cannot accompany a loved one.
+              Useful for younger travellers, first-time solo travellers, senior citizens, people who need mobility or language support, and families who cannot accompany a loved one.
             </p>
           </div>
           <div className="card">
