@@ -117,7 +117,7 @@ function getEmailAlertConfig(booking: BookingAlert) {
   }
 }
 
-async function sendEmailBookingAlert(booking: BookingAlert) {
+export async function sendEmailBookingAlert(booking: BookingAlert) {
   const config = getEmailAlertConfig(booking)
   if (!config) return { configured: false as const }
 
